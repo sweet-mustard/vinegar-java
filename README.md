@@ -10,13 +10,16 @@ It brings [Pattern Matching](https://en.wikipedia.org/wiki/Pattern_matching) to 
 Here's an example of the Pattern Matcher Vinegar in action:
 
 ```
-String result = new PatternMatcher<Shape, String>()
-    .when(is(Circle.class)).then(c ->
-            "Circle (radius = " + c.radius + ", area = " + c.getArea() + ")")
-    .when(is(Rectangle.class)).then(r ->
-            "Rectangle (width = " + r.width + ", height = " + r.height + ", area = " + r.getArea() + ")")
-    .otherwise(s -> "Unknown shape (area = " + s.getArea() + ")")
-    .apply(new Rectangle(2.5, 4));
+import static be.sweetmustard.vinegar.matcher.Condition.is;
+
+Function<Shape, String> matcher = new PatternMatcher<Shape, String>()
+    .when(is(Circle.class))
+        .then(c -> "Circle with radius " + c.getRadius())
+    .when(is(Rectangle.class))
+        .then(r -> "Rectangle with width " + r.getWidth() + " and height " + r.getHeight())
+    .otherwise("Unknown shape");
+
+String result = matcher.apply(new Rectangle(2, 5)); // Returns: Rectangle with width 2 and height 5
 ```
 
 See also [Pattern Matching for Java](http://cr.openjdk.java.net/~briangoetz/amber/pattern-match.html)
