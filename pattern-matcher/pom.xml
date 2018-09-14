@@ -19,6 +19,7 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
+                <version>${maven-compiler-plugin.version}</version>
             </plugin>
         </plugins>
     </build>

@@ -16,5 +16,7 @@
         <java.version>1.8</java.version>
         <junit-jupiter.version>5.2.0</junit-jupiter.version>
         <hamcrest.version>1.3</hamcrest.version>
+        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 </project>
