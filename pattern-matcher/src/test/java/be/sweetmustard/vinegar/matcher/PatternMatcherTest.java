@@ -130,9 +130,9 @@ class PatternMatcherTest {
     @Test
     void hamcrestMatcherShouldMatch() {
         String result = new PatternMatcher<List<String>, String>()
-                .when(hasItem("baz")).then("It's a Baz!")
-                .when(hasItem("foo")).then("It's a Foo!")
-                .when(hasItem("bar")).then("It's a Bar!")
+                .match(hasItem("baz")).then("It's a Baz!")
+                .match(hasItem("foo")).then("It's a Foo!")
+                .match(hasItem("bar")).then("It's a Bar!")
                 .otherwise("It's nothing!")
                 .apply(Arrays.asList("bar", "foo"));
 

@@ -37,10 +37,8 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 import static be.sweetmustard.vinegar.matcher.Condition.eq;
-import static be.sweetmustard.vinegar.matcher.Condition.regex;
 
 /**
  * The Pattern Matcher Vinegar is inspired by JDK enhancement proposal 305. It brings Pattern Matching to Java in the
@@ -150,7 +148,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      *
      * @return A <code>CaseBuilder</code> for chaining the result of this case
      */
-    public final CaseBuilder<I, I, O> when(final Matcher<? super I> matcher) {
+    public final CaseBuilder<I, I, O> match(final Matcher<? super I> matcher) {
         return new CaseBuilder<>(this, Condition.matcher(matcher));
     }
 
