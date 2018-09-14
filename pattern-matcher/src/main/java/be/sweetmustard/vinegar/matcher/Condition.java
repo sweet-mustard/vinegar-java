@@ -25,7 +25,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package be.sweetmustards.seeds.matcher;
+package be.sweetmustard.vinegar.matcher;
 
 import org.hamcrest.Matcher;
 
@@ -36,51 +36,101 @@ import java.util.function.Predicate;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
-public interface Condition<I, I2> {
+/**
+ * A condition to pass to {@link PatternMatcher#when(Condition)}. The condition can optionally check for a subtype
+ * of the input type or extract a value of the input. In that case, the parameter <code>I1</code> will differ from
+ * the original input type <code>I</code>.
+ *
+ * @param <I>  the original input type
+ * @param <I1> the mapped input type (often the same as <code>I</code>)
+ */
+public interface Condition<I, I1> {
+    /**
+     * Returns whether the specified input matches this condition.
+     */
     boolean test(final I input);
 
-    I2 map(final I input);
+    /**
+     * Maps the input in case this condition performs type checking or extracts a value.
+     */
+    I1 map(final I input);
 
-    static <I, I2 extends I> Condition<I, I2> is(final Class<I2> type) {
+    /**
+     * Creates a condition that checks whether the input is of type <code>I1</code>. If so, the condition will cast
+     * the input to the type <code>I1</code>
+     */
+    static <I, I1 extends I> Condition<I, I1> is(final Class<I1> type) {
         return new TypeCondition<>(type);
     }
 
+    /**
+     * Create a condition that checks whether the input satisfies the specified predicate. This condition does not
+     * perform any mapping and will return the input as is.
+     */
     static <I> Condition<I, I> predicate(final Predicate<? super I> predicate) {
         return new PredicateCondition<>(predicate);
     }
 
+    /**
+     * Create a condition that checks whether the input satisfies the specified Hamcrest {@link Matcher}. This condition does not
+     * perform any mapping and will return the input as is.
+     */
     static <I> Condition<I, I> matcher(final Matcher<? super I> matcher) {
         return predicate(matcher::matches);
     }
 
+    /**
+     * Create a condition that checks whether the input is equal to the specified value using {@link Object#equals(Object)}.
+     * This condition does not perform any mapping and will return the input as is.
+     */
     static <I> Condition<I, I> eq(final I value) {
         return predicate(i -> Objects.equals(i, value));
     }
 
+    /**
+     * Creates a condition that will match any value. This condition does not perform any mapping and will return the input as is.
+     */
     static <I> Condition<I, I> any() {
         return predicate(i -> true);
     }
 
+    /**
+     * Creates a condition that matches strings with the specified regex. This condition maps the input to a {@link MatchResult}.
+     */
     static Condition<String, MatchResult> regex(final String regex) {
         return new RegexCondition(regex);
     }
 
+    /**
+     * Creates a condition that matches strings with the specified regex. This condition maps the input to the first matching group.
+     */
     static Condition<String, String> regex1(final String regex) {
         return new Regex1Condition(regex);
     }
 
+    /**
+     * Creates a condition that matches strings with the specified regex. This condition maps the input to  a {@link Pair} of
+     * the first two matching groups.
+     */
     static Condition<String, Pair<String, String>> regex2(final String regex) {
         return new Regex2Condition(regex);
     }
 
+    /**
+     * Creates a condition that matches a {@link Pair}. It checks both values of the pair with the specified conditions.
+     * This condition does not perform any mapping and will return the input as is.
+     *
+     * @param condition1 the condition to apply to the first value of the pair
+     * @param condition2 the condition to apply to the second value of the pair
+     */
     static <A, B> Condition<Pair<A, B>, Pair<A, B>> pair(Condition<A, A> condition1, Condition<B, B> condition2) {
         return new PairCondition<>(condition1, condition2);
     }
 
-    final class TypeCondition<I, I2 extends I> implements Condition<I, I2> {
-        private final Class<I2> type;
+    final class TypeCondition<I, I1 extends I> implements Condition<I, I1> {
+        private final Class<I1> type;
 
-        private TypeCondition(final Class<I2> type) {
+        private TypeCondition(final Class<I1> type) {
             this.type = type;
         }
 
@@ -90,7 +140,7 @@ public interface Condition<I, I2> {
         }
 
         @Override
-        public final I2 map(final I input) {
+        public final I1 map(final I input) {
             return type.cast(input);
         }
     }
@@ -183,7 +233,7 @@ public interface Condition<I, I2> {
 
         @Override
         public boolean test(final Pair<A, B> input) {
-            return condition1.test(input.a) && condition2.test(input.b);
+            return condition1.test(input.getA()) && condition2.test(input.getB());
         }
 
         @Override

@@ -25,8 +25,29 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package be.sweetmustards.seeds.matcher;
+package be.sweetmustard.vinegar.matcher;
 
+/**
+ * <p>Assign this interface to a class to make value extraction easier during pattern matching.</p>
+ * Example:
+ * <pre>
+ * class Rectangle implements Extractable&lt;Pair&lt;Double, Double>> {
+ *     double width;
+ *     double height;
+ *
+ *     public Pair&lt;Double, Double> extract() {
+ *         return new Pair<>(width, height);
+ *     }
+ * }
+ * </pre>
+ *
+ * @param <T> the type to extract
+ * @see PatternMatcher#extract(java.util.function.Function)
+ */
 public interface Extractable<T> {
+
+    /**
+     * Returns the extracted value.
+     */
     T extract();
 }

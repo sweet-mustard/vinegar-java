@@ -25,16 +25,68 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package be.sweetmustards.seeds.matcher;
+package be.sweetmustard.vinegar.matcher;
 
+import java.util.Objects;
+
+/**
+ * A triplet are three values that go together. Triplets can be extracted from the input of a {@link PatternMatcher}.
+ *
+ * @see PatternMatcher#extract(TriFunction)
+ */
 public final class Triplet<A, B, C> {
-    public final A a;
-    public final B b;
-    public final C c;
+    private final A a;
+    private final B b;
+    private final C c;
 
     public Triplet(final A a, final B b, final C c) {
         this.a = a;
         this.b = b;
         this.c = c;
+    }
+
+    /**
+     * Returns the first value of the triplet.
+     */
+    public A getA() {
+        return a;
+    }
+
+    /**
+     * Returns the second value of the triplet.
+     */
+    public B getB() {
+        return b;
+    }
+
+    /**
+     * Returns the third value of the triplet.
+     */
+    public C getC() {
+        return c;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final Triplet<?, ?, ?> triplet = (Triplet<?, ?, ?>) o;
+        return Objects.equals(a, triplet.a) &&
+                Objects.equals(b, triplet.b) &&
+                Objects.equals(c, triplet.c);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(a, b, c);
+    }
+
+    @Override
+    public String toString() {
+        return "Triplet{" +
+                "a=" + a +
+                ", b=" + b +
+                ", c=" + c +
+                '}';
     }
 }

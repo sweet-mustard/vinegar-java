@@ -1,13 +1,13 @@
-# Mustard Seeds (Java)
+# Vinegar (Java)
 
-Mustard seeds are small but highly reusable libraries.
-Seeds typically don't require any other libraries, but play nice with popular frameworks and libraries.
+Vinegar is a set of small but highly reusable libraries.
+Vinegar libraries typically don't require any other libraries, but play nice with popular frameworks and libraries.
 
 ## Pattern Matcher
 
-The [Pattern Matcher Seed](pattern-matcher/README.md) is inspired by [JDK enhancement proposal 305](http://openjdk.java.net/jeps/305).
+The [Pattern Matcher Vinegar](pattern-matcher/README.md) is inspired by [JDK enhancement proposal 305](http://openjdk.java.net/jeps/305).
 It brings [Pattern Matching](https://en.wikipedia.org/wiki/Pattern_matching) to Java in the form of a DSL.
-Here's an example of the Pattern Matcher Seed in action:
+Here's an example of the Pattern Matcher Vinegar in action:
 
 ```
 String result = new PatternMatcher<Shape, String>()

@@ -25,28 +25,25 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package be.sweetmustard.seeds.matcher;
+package be.sweetmustard.vinegar.matcher;
 
-import be.sweetmustards.seeds.matcher.Extractable;
-import be.sweetmustards.seeds.matcher.Pair;
-import be.sweetmustards.seeds.matcher.PatternMatcher;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static be.sweetmustards.seeds.matcher.Condition.any;
-import static be.sweetmustards.seeds.matcher.Condition.eq;
-import static be.sweetmustards.seeds.matcher.Condition.is;
-import static be.sweetmustards.seeds.matcher.Condition.pair;
-import static be.sweetmustards.seeds.matcher.Condition.regex;
-import static be.sweetmustards.seeds.matcher.Condition.regex1;
-import static be.sweetmustards.seeds.matcher.Condition.regex2;
-import static be.sweetmustards.seeds.matcher.PatternMatcher.consumer;
-import static be.sweetmustards.seeds.matcher.PatternMatcher.extract;
+import static be.sweetmustard.vinegar.matcher.Condition.any;
+import static be.sweetmustard.vinegar.matcher.Condition.eq;
+import static be.sweetmustard.vinegar.matcher.Condition.is;
+import static be.sweetmustard.vinegar.matcher.Condition.pair;
+import static be.sweetmustard.vinegar.matcher.Condition.regex;
+import static be.sweetmustard.vinegar.matcher.Condition.regex1;
+import static be.sweetmustard.vinegar.matcher.Condition.regex2;
+import static be.sweetmustard.vinegar.matcher.PatternMatcher.extract;
 import static java.lang.Double.parseDouble;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -68,24 +65,25 @@ class PatternMatcherTest {
     @Test
     void matchEqShouldTestForEquality() {
         Optional<String> result = new PatternMatcher<String, String>()
-                .when(eq("E")).then("Earth")
-                .when(eq("W")).then("Water")
-                .when(eq("F")).then("Fire")
-                .when(eq("A")).then("Air")
+                .when("E").then("Earth")
+                .when("W").then("Water")
+                .when("F").then("Fire")
+                .when("A").then("Air")
                 .apply("F");
 
         assertEquals("Fire", result.orElse(null));
     }
 
     @Test
-    void consumerShouldConsumeInput() {
+    void thenDoShouldConsumeInput() {
         List<Integer> values = new ArrayList<>();
         new PatternMatcher<Integer, Void>()
-                .when(i -> i <= 5).then(consumer(v -> values.add(v * v)))
-                .when(i -> i > 5).then(consumer(values::add))
+                .when(i -> i <= 5).thenDo(v -> values.add(v * v))
+                .when(i -> i > 5).thenDo(values::add)
+                .otherwiseDo(v -> values.add(v + 1))
                 .apply(4);
 
-        assertEquals(16, (int) values.get(0));
+        assertEquals(Collections.singletonList(16), values);
     }
 
     @Test
@@ -152,12 +150,12 @@ class PatternMatcherTest {
         assertEquals("Buzz", result);
     }
 
-    private interface Shape<T> extends Extractable<T> {
+    interface Shape<T> extends Extractable<T> {
         double getArea();
     }
 
-    private static class Circle implements Shape<Double> {
-        private final double radius;
+    static class Circle implements Shape<Double> {
+        final double radius;
 
         Circle(final double radius) {
             this.radius = radius;
@@ -188,9 +186,9 @@ class PatternMatcherTest {
         }
     }
 
-    private static class Rectangle implements Shape<Pair<Double, Double>> {
-        private final double width;
-        private final double height;
+    static class Rectangle implements Shape<Pair<Double, Double>> {
+        final double width;
+        final double height;
 
         Rectangle(final double width, final double height) {
             this.width = width;
