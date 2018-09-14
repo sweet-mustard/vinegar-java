@@ -7,6 +7,8 @@ A pattern matcher typically matches an input object for one or more patterns.
 It can either return a result from that, or perform an action.
 
 Pattern matchers are immutable and can safely be reused and shared across threads.
+Since there is a cost to creating pattern matchers, especially with regular expression matching,
+it is advised to create your pattern matcher as a constant and reuse it as much as possible.
 
 ## Features
 
