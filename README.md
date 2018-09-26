@@ -10,7 +10,7 @@ It brings [Pattern Matching](https://en.wikipedia.org/wiki/Pattern_matching) to 
 Here's an example of the Pattern Matcher Vinegar in action:
 
 ```
-import static be.sweetmustard.vinegar.matcher.Condition.is;
+import static be.sweetmustard.vinegar.matcher.MappingCondition.is;
 
 Function<Shape, String> matcher = new PatternMatcher<Shape, String>()
     .when(is(Circle.class))

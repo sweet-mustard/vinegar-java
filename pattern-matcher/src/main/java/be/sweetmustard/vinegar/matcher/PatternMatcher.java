@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static be.sweetmustard.vinegar.matcher.Condition.eq;
+import static be.sweetmustard.vinegar.matcher.MappingCondition.eq;
 
 /**
  * The Pattern Matcher Vinegar is inspired by JDK enhancement proposal 305. It brings Pattern Matching to Java in the
@@ -105,9 +105,9 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      * @param <I1> The type of the first extracted value.
      * @param <I2> The type of the second extracted value.
      * @return A <code>CaseBuilder</code> for chaining the result of this case
-     * @see Condition
+     * @see MappingCondition
      */
-    public final <I1, I2> Case2Builder<I, I1, I2, O> when2(final Condition<? super I, Pair<I1, I2>> condition) {
+    public final <I1, I2> Case2Builder<I, I1, I2, O> when2(final MappingCondition<? super I, Pair<I1, I2>> condition) {
         return new Case2Builder<>(this, condition);
     }
 
@@ -119,9 +119,9 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      * @param <I1> The type of the input type or the extracted value type, in case the condition performs
      *             type checking or value extraction.
      * @return A <code>CaseBuilder</code> for chaining the result of this case
-     * @see Condition
+     * @see MappingCondition
      */
-    public final <I1> CaseBuilder<I, I1, O> when(final Condition<? super I, I1> condition) {
+    public final <I1> CaseBuilder<I, I1, O> when(final MappingCondition<? super I, I1> condition) {
         return new CaseBuilder<>(this, condition);
     }
 
@@ -140,7 +140,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      * @return A <code>CaseBuilder</code> for chaining the result of this case
      */
     public final CaseBuilder<I, I, O> when(final Predicate<? super I> predicate) {
-        return new CaseBuilder<>(this, Condition.predicate(predicate));
+        return new CaseBuilder<>(this, MappingCondition.predicate(predicate));
     }
 
     /**
@@ -149,7 +149,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      * @return A <code>CaseBuilder</code> for chaining the result of this case
      */
     public final CaseBuilder<I, I, O> match(final Matcher<? super I> matcher) {
-        return new CaseBuilder<>(this, Condition.matcher(matcher));
+        return new CaseBuilder<>(this, MappingCondition.matcher(matcher));
     }
 
     /**
@@ -199,9 +199,10 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
     @Override
     public final Optional<O> apply(final I input) {
         return cases.stream()
-                .filter(c -> c.matches(input))
-                .findFirst()
-                .map(c -> c.map(input));
+                .map(c -> c.mapIfMatches(input))
+                .filter(MaybeMatch::matches)
+                .map(MaybeMatch::getValue)
+                .findFirst();
     }
 
     /**
@@ -210,9 +211,9 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      */
     public static final class CaseBuilder<I, I1, O> {
         private final PatternMatcher<? super I, O> patternMatcher;
-        private final Condition<? super I, I1> condition;
+        private final MappingCondition<? super I, I1> condition;
 
-        private CaseBuilder(final PatternMatcher<? super I, O> patternMatcher, final Condition<? super I, I1> condition) {
+        private CaseBuilder(final PatternMatcher<? super I, O> patternMatcher, final MappingCondition<? super I, I1> condition) {
             this.patternMatcher = patternMatcher;
             this.condition = condition;
         }
@@ -251,9 +252,9 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
 
     public static final class Case2Builder<I, I1, I2, O> {
         private final PatternMatcher<? super I, O> patternMatcher;
-        private final Condition<? super I, Pair<I1, I2>> condition;
+        private final MappingCondition<? super I, Pair<I1, I2>> condition;
 
-        private Case2Builder(final PatternMatcher<? super I, O> patternMatcher, final Condition<? super I, Pair<I1, I2>> condition) {
+        private Case2Builder(final PatternMatcher<? super I, O> patternMatcher, final MappingCondition<? super I, Pair<I1, I2>> condition) {
             this.patternMatcher = patternMatcher;
             this.condition = condition;
         }
@@ -282,20 +283,16 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
     }
 
     private static final class Case<I, I1, O> {
-        private final Condition<? super I, I1> condition;
+        private final MappingCondition<? super I, I1> condition;
         private Function<? super I1, ? extends O> mapper;
 
-        Case(final Condition<? super I, I1> condition, final Function<? super I1, ? extends O> mapper) {
+        Case(final MappingCondition<? super I, I1> condition, final Function<? super I1, ? extends O> mapper) {
             this.condition = condition;
             this.mapper = mapper;
         }
 
-        final boolean matches(final I input) {
-            return condition.test(input);
-        }
-
-        final O map(final I input) {
-            return mapper.apply(condition.map(input));
+        final MaybeMatch<O> mapIfMatches(final I input) {
+            return condition.mapIfMatches(input).map(v -> mapper.apply(v));
         }
     }
 
@@ -316,14 +313,14 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
          */
         @Override
         public final O apply(final I input) {
-            Optional<Case<? super I, ?, O>> matchingCase = cases.stream()
-                    .filter(c -> c.matches(input))
+            Optional<MaybeMatch<O>> matchingCase = cases.stream()
+                    .map(c -> c.mapIfMatches(input))
+                    .filter(MaybeMatch::matches)
                     .findFirst();
             if (!matchingCase.isPresent()) {
                 return lastMapper.apply(input);
             }
-            return matchingCase.map(c -> c.map(input))
-                    .orElse(null);
+            return matchingCase.orElse(MaybeMatch.noMatch()).getValue();
         }
     }
 }

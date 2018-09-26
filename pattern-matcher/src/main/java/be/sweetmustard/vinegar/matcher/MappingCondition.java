@@ -29,53 +29,46 @@ package be.sweetmustard.vinegar.matcher;
 
 import org.hamcrest.Matcher;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
 /**
- * A condition to pass to {@link PatternMatcher#when(Condition)}. The condition can optionally check for a subtype
- * of the input type or extract a value of the input. In that case, the parameter <code>I1</code> will differ from
- * the original input type <code>I</code>.
+ * A condition to pass to {@link PatternMatcher#when(MappingCondition)}. The condition can optionally do some mapping for
+ * convenience, eg. check for a subtype of the input type and cast to it or extract a value of the input.
+ * In that case, the parameter <code>I1</code> will differ from the original input type <code>I</code>.
  *
  * @param <I>  the original input type
  * @param <I1> the mapped input type (often the same as <code>I</code>)
  */
-public interface Condition<I, I1> {
-    /**
-     * Returns whether the specified input matches this condition.
-     */
-    boolean test(final I input);
-
+public abstract class MappingCondition<I, I1> {
     /**
      * Maps the input in case this condition performs type checking or extracts a value.
      */
-    I1 map(final I input);
+    public abstract MaybeMatch<I1> mapIfMatches(final I input);
 
     /**
      * Creates a condition that checks whether the input is of type <code>I1</code>. If so, the condition will cast
      * the input to the type <code>I1</code>
      */
-    static <I, I1 extends I> Condition<I, I1> is(final Class<I1> type) {
-        return new TypeCondition<>(type);
+    public static <I, I1 extends I> MappingCondition<I, I1> is(final Class<I1> type) {
+        return new TypeMappingCondition<>(type);
     }
 
     /**
      * Create a condition that checks whether the input satisfies the specified predicate. This condition does not
      * perform any mapping and will return the input as is.
      */
-    static <I> Condition<I, I> predicate(final Predicate<? super I> predicate) {
-        return new PredicateCondition<>(predicate);
+    public static <I> MappingCondition<I, I> predicate(final Predicate<? super I> predicate) {
+        return new PredicateMappingCondition<>(predicate);
     }
 
     /**
      * Create a condition that checks whether the input satisfies the specified Hamcrest {@link Matcher}. This condition does not
      * perform any mapping and will return the input as is.
      */
-    static <I> Condition<I, I> matcher(final Matcher<? super I> matcher) {
+    public static <I> MappingCondition<I, I> matcher(final Matcher<? super I> matcher) {
         return predicate(matcher::matches);
     }
 
@@ -83,37 +76,37 @@ public interface Condition<I, I1> {
      * Create a condition that checks whether the input is equal to the specified value using {@link Object#equals(Object)}.
      * This condition does not perform any mapping and will return the input as is.
      */
-    static <I> Condition<I, I> eq(final I value) {
+    public static <I> MappingCondition<I, I> eq(final I value) {
         return predicate(i -> Objects.equals(i, value));
     }
 
     /**
      * Creates a condition that will match any value. This condition does not perform any mapping and will return the input as is.
      */
-    static <I> Condition<I, I> any() {
+    public static <I> MappingCondition<I, I> any() {
         return predicate(i -> true);
     }
 
     /**
      * Creates a condition that matches strings with the specified regex. This condition maps the input to a {@link MatchResult}.
      */
-    static Condition<String, MatchResult> regex(final String regex) {
-        return new RegexCondition(regex);
+    public static MappingCondition<String, MatchResult> regex(final String regex) {
+        return new RegexMappingCondition(regex);
     }
 
     /**
      * Creates a condition that matches strings with the specified regex. This condition maps the input to the first matching group.
      */
-    static Condition<String, String> regex1(final String regex) {
-        return new Regex1Condition(regex);
+    public static MappingCondition<String, String> regex1(final String regex) {
+        return new Regex1MappingCondition(regex);
     }
 
     /**
      * Creates a condition that matches strings with the specified regex. This condition maps the input to  a {@link Pair} of
      * the first two matching groups.
      */
-    static Condition<String, Pair<String, String>> regex2(final String regex) {
-        return new Regex2Condition(regex);
+    public static MappingCondition<String, Pair<String, String>> regex2(final String regex) {
+        return new Regex2MappingCondition(regex);
     }
 
     /**
@@ -123,122 +116,92 @@ public interface Condition<I, I1> {
      * @param condition1 the condition to apply to the first value of the pair
      * @param condition2 the condition to apply to the second value of the pair
      */
-    static <A, B> Condition<Pair<A, B>, Pair<A, B>> pair(Condition<A, A> condition1, Condition<B, B> condition2) {
-        return new PairCondition<>(condition1, condition2);
+    public static <A, B> MappingCondition<Pair<A, B>, Pair<A, B>> pair(MappingCondition<A, A> condition1, MappingCondition<B, B> condition2) {
+        return new PairMappingCondition<>(condition1, condition2);
     }
 
-    final class TypeCondition<I, I1 extends I> implements Condition<I, I1> {
+    static final class TypeMappingCondition<I, I1 extends I> extends MappingCondition<I, I1> {
         private final Class<I1> type;
 
-        private TypeCondition(final Class<I1> type) {
+        private TypeMappingCondition(final Class<I1> type) {
             this.type = type;
         }
 
         @Override
-        public final boolean test(final I input) {
-            return input != null && type.isAssignableFrom(input.getClass());
-        }
-
-        @Override
-        public final I1 map(final I input) {
-            return type.cast(input);
+        public MaybeMatch<I1> mapIfMatches(final I input) {
+            return MaybeMatch.create(input != null && type.isAssignableFrom(input.getClass()), () -> type.cast(input));
         }
     }
 
-    final class PredicateCondition<I> implements Condition<I, I> {
+    static final class PredicateMappingCondition<I> extends MappingCondition<I, I> {
         private final Predicate<? super I> predicate;
 
-        private PredicateCondition(final Predicate<? super I> predicate) {
+        private PredicateMappingCondition(final Predicate<? super I> predicate) {
             this.predicate = predicate;
         }
 
         @Override
-        public final boolean test(final I input) {
-            return predicate.test(input);
-        }
-
-        @Override
-        public final I map(final I input) {
-            return input;
+        public MaybeMatch<I> mapIfMatches(final I input) {
+            return MaybeMatch.create(predicate.test(input), () -> input);
         }
     }
 
-    final class RegexCondition implements Condition<String, MatchResult> {
+    static final class RegexMappingCondition extends MappingCondition<String, MatchResult> {
         private final Pattern pattern;
-        private final ThreadLocal<Map<String, MatchResult>> result = ThreadLocal.withInitial(HashMap::new);
 
-        RegexCondition(final String regex) {
+        RegexMappingCondition(final String regex) {
             pattern = Pattern.compile(regex);
         }
 
         @Override
-        public boolean test(final String input) {
+        public MaybeMatch<MatchResult> mapIfMatches(final String input) {
             java.util.regex.Matcher matcher = pattern.matcher(input);
-            boolean matches = matcher.matches();
-            result.get().put(input, matcher.toMatchResult());
-            return matches;
-        }
-
-        @Override
-        public MatchResult map(final String input) {
-            return result.get().remove(input);
+            return MaybeMatch.create(matcher.matches(), () -> matcher);
         }
     }
 
-    final class Regex1Condition implements Condition<String, String> {
-        private final RegexCondition delegateCondition;
+    static final class Regex1MappingCondition extends MappingCondition<String, String> {
+        private final RegexMappingCondition delegateCondition;
 
-        Regex1Condition(final String regex) {
-            this.delegateCondition = new RegexCondition(regex);
+        Regex1MappingCondition(final String regex) {
+            this.delegateCondition = new RegexMappingCondition(regex);
         }
 
         @Override
-        public boolean test(final String input) {
-            return delegateCondition.test(input);
-        }
-
-        @Override
-        public String map(final String input) {
-            return delegateCondition.map(input).group(1);
+        public MaybeMatch<String> mapIfMatches(final String input) {
+            return delegateCondition.mapIfMatches(input)
+                    .map(r -> r.group(1));
         }
     }
 
-    final class Regex2Condition implements Condition<String, Pair<String, String>> {
-        private final RegexCondition delegateCondition;
+    static final class Regex2MappingCondition extends MappingCondition<String, Pair<String, String>> {
+        private final RegexMappingCondition delegateCondition;
 
-        Regex2Condition(final String regex) {
-            this.delegateCondition = new RegexCondition(regex);
+        Regex2MappingCondition(final String regex) {
+            this.delegateCondition = new RegexMappingCondition(regex);
         }
 
         @Override
-        public boolean test(final String input) {
-            return delegateCondition.test(input);
-        }
-
-        @Override
-        public Pair<String, String> map(final String input) {
-            MatchResult result = delegateCondition.map(input);
-            return new Pair<>(result.group(1), result.group(2));
+        public MaybeMatch<Pair<String, String>> mapIfMatches(final String input) {
+            return delegateCondition.mapIfMatches(input)
+                    .map(r -> new Pair<>(r.group(1), r.group(2)));
         }
     }
 
-    final class PairCondition<A, B> implements Condition<Pair<A, B>, Pair<A, B>> {
-        private final Condition<A, A> condition1;
-        private final Condition<B, B> condition2;
+    static final class PairMappingCondition<A, B> extends MappingCondition<Pair<A, B>, Pair<A, B>> {
+        private final MappingCondition<A, A> condition1;
+        private final MappingCondition<B, B> condition2;
 
-        PairCondition(final Condition<A, A> condition1, final Condition<B, B> condition2) {
+        PairMappingCondition(final MappingCondition<A, A> condition1, final MappingCondition<B, B> condition2) {
             this.condition1 = condition1;
             this.condition2 = condition2;
         }
 
         @Override
-        public boolean test(final Pair<A, B> input) {
-            return condition1.test(input.getA()) && condition2.test(input.getB());
-        }
-
-        @Override
-        public Pair<A, B> map(final Pair<A, B> input) {
-            return input;
+        public MaybeMatch<Pair<A, B>> mapIfMatches(final Pair<A, B> input) {
+            MaybeMatch<A> maybeA = condition1.mapIfMatches(input.getA());
+            MaybeMatch<B> maybeB = condition2.mapIfMatches(input.getB());
+            return MaybeMatch.create(maybeA.matches() && maybeB.matches(), () -> new Pair<>(maybeA.getValue(), maybeB.getValue()));
         }
     }
 

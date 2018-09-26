@@ -45,7 +45,7 @@ String result = matcher.apply(11); // Returns: Greater than 10
 When providing a type `Condition` using `is(Class)`, the input will automatically be converted to the specified type.
 
 ```
-import static be.sweetmustard.vinegar.matcher.Condition.is;
+import static be.sweetmustard.vinegar.matcher.MappingCondition.is;
 
 Function<Shape, String> matcher = new PatternMatcher<Shape, String>()
     .when(is(Circle.class))
@@ -76,9 +76,9 @@ The condition `regex1()` returns the first matching group of a regular expressio
 `regex()` returns a `MatchResult` with all matching groups of a regular expression.
 
 ```
-import static be.sweetmustard.vinegar.matcher.Condition.regex;
-import static be.sweetmustard.vinegar.matcher.Condition.regex1;
-import static be.sweetmustard.vinegar.matcher.Condition.regex2;
+import static be.sweetmustard.vinegar.matcher.MappingCondition.regex;
+import static be.sweetmustard.vinegar.matcher.MappingCondition.regex1;
+import static be.sweetmustard.vinegar.matcher.MappingCondition.regex2;
 
 Function<String, Optional<Object>> matcher = new PatternMatcher<String, Object>()
     .when(regex1("^(\\d+)$")).then(Integer::parseInt)

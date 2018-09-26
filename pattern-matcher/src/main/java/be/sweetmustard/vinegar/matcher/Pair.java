@@ -33,8 +33,8 @@ import java.util.function.BiFunction;
 /**
  * A pair are two values that go together. Pairs can be matched by a {@link PatternMatcher}, or extracted from the input.
  *
- * @see Condition#pair(Condition, Condition)
- * @see Condition#regex2(String)
+ * @see MappingCondition#pair(MappingCondition, MappingCondition)
+ * @see MappingCondition#regex2(String)
  * @see PatternMatcher#extract(BiFunction)
  */
 public final class Pair<T1, T2> {
