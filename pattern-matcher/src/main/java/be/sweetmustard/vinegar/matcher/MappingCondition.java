@@ -100,6 +100,14 @@ public abstract class MappingCondition<I, I1> {
   }
 
   /**
+   * Creates a condition that matches strings with the specified {@link Pattern}. This condition maps the
+   * input to a {@link MatchResult}.
+   */
+  public static MappingCondition<String, MatchResult> regex(final Pattern pattern) {
+    return new RegexMappingCondition(pattern);
+  }
+
+  /**
    * Creates a condition that matches strings with the specified regex. This condition maps the
    * input to the first matching group.
    */
