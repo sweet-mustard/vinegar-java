@@ -76,6 +76,7 @@ The condition `regex1()` returns the first matching group of a regular expressio
 `regex2()` returns the first two matching groups. Combine with `regex2()` with `when2()`
 `regex()` returns a `MatchResult` with all matching groups of a regular expression.
 
+> The regex methods also support a `Pattern` which is a compiled representation of a regular expression.
 ```
 import static be.sweetmustard.vinegar.matcher.MappingCondition.regex;
 import static be.sweetmustard.vinegar.matcher.MappingCondition.regex1;
