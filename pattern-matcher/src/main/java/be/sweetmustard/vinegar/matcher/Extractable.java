@@ -46,8 +46,8 @@ package be.sweetmustard.vinegar.matcher;
  */
 public interface Extractable<T> {
 
-    /**
-     * Returns the extracted value.
-     */
-    T extract();
+  /**
+   * Returns the extracted value.
+   */
+  T extract();
 }

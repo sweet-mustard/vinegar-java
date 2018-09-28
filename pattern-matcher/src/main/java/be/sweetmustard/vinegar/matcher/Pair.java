@@ -31,54 +31,60 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 
 /**
- * A pair are two values that go together. Pairs can be matched by a {@link PatternMatcher}, or extracted from the input.
+ * A pair are two values that go together. Pairs can be matched by a {@link PatternMatcher}, or
+ * extracted from the input.
  *
  * @see MappingCondition#pair(MappingCondition, MappingCondition)
  * @see MappingCondition#regex2(String)
  * @see PatternMatcher#extract(BiFunction)
  */
 public final class Pair<T1, T2> {
-    private final T1 a;
-    private final T2 b;
 
-    public Pair(final T1 a, final T2 b) {
-        this.a = a;
-        this.b = b;
-    }
+  private final T1 a;
+  private final T2 b;
 
-    /**
-     * Returns the first value of the pair.
-     */
-    public T1 getA() {
-        return a;
-    }
+  public Pair(final T1 a, final T2 b) {
+    this.a = a;
+    this.b = b;
+  }
 
-    /**
-     * Returns the second value of the pair.
-     */
-    public T2 getB() {
-        return b;
-    }
+  /**
+   * Returns the first value of the pair.
+   */
+  public T1 getA() {
+    return a;
+  }
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Pair<?, ?> pair = (Pair<?, ?>) o;
-        return Objects.equals(a, pair.a) &&
-                Objects.equals(b, pair.b);
-    }
+  /**
+   * Returns the second value of the pair.
+   */
+  public T2 getB() {
+    return b;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(a, b);
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
     }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final Pair<?, ?> pair = (Pair<?, ?>) o;
+    return Objects.equals(a, pair.a) &&
+        Objects.equals(b, pair.b);
+  }
 
-    @Override
-    public String toString() {
-        return "Pair{" +
-                "a=" + a +
-                ", b=" + b +
-                '}';
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(a, b);
+  }
+
+  @Override
+  public String toString() {
+    return "Pair{" +
+        "a=" + a +
+        ", b=" + b +
+        '}';
+  }
 }
