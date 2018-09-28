@@ -23,3 +23,7 @@ String result = matcher.apply(new Rectangle(2, 5)); // Returns: Rectangle with w
 ```
 
 See also [Pattern Matching for Java](http://cr.openjdk.java.net/~briangoetz/amber/pattern-match.html)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENCE.txt) file for details
