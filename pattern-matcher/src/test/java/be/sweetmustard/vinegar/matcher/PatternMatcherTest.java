@@ -259,7 +259,7 @@ class PatternMatcherTest {
     final double width;
     final double height;
 
-    Rectangle(double width, final double height) {
+    Rectangle(double width, double height) {
       this.width = width;
       this.height = height;
     }
