@@ -15,7 +15,7 @@
     <dependency>
       <groupId>be.sweetmustard.vinegar</groupId>
       <artifactId>vinegar-pattern-matcher</artifactId>
-      <version>${parent.version}</version>
+      <version>${project.parent.version}</version>
     </dependency>
   </dependencies>
 </project>

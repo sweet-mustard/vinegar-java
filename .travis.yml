@@ -1,1 +1,24 @@
 language: java
+dist: trusty
+sudo: false
+
+jdk:
+- oraclejdk8
+- openjdk8
+- openjdk11
+
+env:
+  global:
+  - secure: "Q8VulahHuooh+Ol3ptgOVP/Q8z2Zm3g77qQY9PtyyF3DUz8XkuYCUdzVGo0MtHqNBRVBNvqdP8FH8zb53vtkNKyOtphRDkkHd0/gVxc25BKNQGg3UoWl2k/g34UNQ7zX/HYMJFRWybOEPYf0g+FCGyowTtdO/DgiY/gh1LkdyoCsdSCHFI8Ly4Bs1r9520jetfSPxlQquZprdEhO72EyCvgmPPKSUmbKWJnEVQ0idY3A+VVi2tXDfEd+mDn3TY4CANRZjzTVvKz+bJmGJJy30g2bD7COEtxNBq+YFHFj8/mb4LQ6gg1nLqBdOlgbPZnn1Hw/TjxZWI0ZS5AZWnwRjunSbzZdokWBSNfkBX2y1qD92eTcqkjbeUFC2iSXnlizwAvXI/ZFPJB7C6P0k/dJDiD0Ut2FHLQcbjjUwsKk8aBsNAkzZ3LF9DJOulHXIn5qYz8EGjvxUYq/emjeFO7HkNwKViWkG3h22kdhZQwmkTDJteT05/4T5iOblyi6wE1IDKzsgC1E27MGJyiBcO7+qVLRSD26yNrKPHg/6NQrwnsNXNt3W+o5J3XY/309wtYPTENNpCnk5Q/8JI9lleOcrw6KSSrNQMsv82f4wus1jt+DR7r1g2JY2K9OdJq+ahBzzp9z4nqOnqFmLRyd76f/w/OSUNAb7ITrvhXIKlPrw+I="
+
+before_install:
+- echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+
+addons:
+  coverity_scan:
+    project:
+      name: "sweet-mustard/vinegar-java"
+      description: "A set of small and highly reusable libraries for Java."
+    notification_email: stijnvanbael@gmail.com
+    build_command: "mvn clean test"
+    branch_pattern: coverity_scan
