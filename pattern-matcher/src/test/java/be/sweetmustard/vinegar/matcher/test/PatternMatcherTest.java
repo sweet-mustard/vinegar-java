@@ -25,20 +25,23 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package be.sweetmustard.vinegar.matcher;
+package be.sweetmustard.vinegar.matcher.test;
 
 import static be.sweetmustard.vinegar.matcher.MappingCondition.any;
 import static be.sweetmustard.vinegar.matcher.MappingCondition.eq;
 import static be.sweetmustard.vinegar.matcher.MappingCondition.is;
 import static be.sweetmustard.vinegar.matcher.MappingCondition.pair;
 import static be.sweetmustard.vinegar.matcher.MappingCondition.regex;
-import static be.sweetmustard.vinegar.matcher.MappingCondition.regex1;
-import static be.sweetmustard.vinegar.matcher.MappingCondition.regex2;
 import static be.sweetmustard.vinegar.matcher.PatternMatcher.extract;
 import static java.lang.Double.parseDouble;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import be.sweetmustard.vinegar.matcher.Extractable;
+import be.sweetmustard.vinegar.matcher.MappingCondition;
+import be.sweetmustard.vinegar.matcher.Pair;
+import be.sweetmustard.vinegar.matcher.PatternMatcher;
+import be.sweetmustard.vinegar.matcher.Triplet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,7 +49,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
-
 import org.junit.jupiter.api.Test;
 
 class PatternMatcherTest {
@@ -162,10 +164,10 @@ class PatternMatcherTest {
   @Test
   void patternShouldEvaluatePattern() {
     Optional<Shape> result = new PatternMatcher<String, Shape>()
-            .when(regex(CIRCLE_PATTERN)).then(m -> new Circle(parseDouble(m.group(1))))
-            .when(regex(RECTANGLE_PATTERN))
-            .then(m -> new Rectangle(parseDouble(m.group(1)), parseDouble(m.group(2))))
-            .apply("Rectangle(3.0, 5.5)");
+        .when(regex(CIRCLE_PATTERN)).then(m -> new Circle(parseDouble(m.group(1))))
+        .when(regex(RECTANGLE_PATTERN))
+        .then(m -> new Rectangle(parseDouble(m.group(1)), parseDouble(m.group(2))))
+        .apply("Rectangle(3.0, 5.5)");
 
     assertEquals(new Rectangle(3.0, 5.5), result.orElse(null));
   }
@@ -173,7 +175,7 @@ class PatternMatcherTest {
   @Test
   void regex1ShouldReturnGroup1() {
     Optional<Shape> result = new PatternMatcher<String, Shape>()
-        .when(regex1(CIRCLE_REGEX)).then(r -> new Circle(parseDouble(r)))
+        .when(MappingCondition.regex1Group(CIRCLE_REGEX)).then(r -> new Circle(parseDouble(r)))
         .when(regex(RECTANGLE_REGEX))
         .then(m -> new Rectangle(parseDouble(m.group(1)), parseDouble(m.group(2))))
         .apply("Rectangle(3.0, 5.5)");
@@ -185,7 +187,7 @@ class PatternMatcherTest {
   void regex2ShouldReturnGroups1And2() {
     Optional<Shape> result = new PatternMatcher<String, Shape>()
         .when(regex(CIRCLE_REGEX)).then(m -> new Circle(parseDouble(m.group(1))))
-        .when2(regex2(RECTANGLE_REGEX))
+        .when2(MappingCondition.regex2Groups(RECTANGLE_REGEX))
         .then((w, h) -> new Rectangle(parseDouble(w), parseDouble(h)))
         .apply("Rectangle(3.0, 5.5)");
 
@@ -224,7 +226,7 @@ class PatternMatcherTest {
 
     final double radius;
 
-    Circle(final double radius) {
+    Circle(double radius) {
       this.radius = radius;
     }
 
@@ -240,7 +242,7 @@ class PatternMatcherTest {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
       if (this == o) {
         return true;
       }
@@ -262,7 +264,7 @@ class PatternMatcherTest {
     final double width;
     final double height;
 
-    Rectangle(final double width, final double height) {
+    Rectangle(double width, final double height) {
       this.width = width;
       this.height = height;
     }
@@ -278,7 +280,7 @@ class PatternMatcherTest {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
       if (this == o) {
         return true;
       }
@@ -302,7 +304,7 @@ class PatternMatcherTest {
     final double length2;
     final double length3;
 
-    public Triangle(double length1, double length2, double length3) {
+    Triangle(double length1, double length2, double length3) {
       this.length1 = length1;
       this.length2 = length2;
       this.length3 = length3;

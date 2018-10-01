@@ -27,12 +27,11 @@
 
 package be.sweetmustard.vinegar.matcher;
 
-import org.hamcrest.Matcher;
-
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
+import org.hamcrest.Matcher;
 
 /**
  * A condition to pass to {@link PatternMatcher#when(MappingCondition)}. The condition can
@@ -43,18 +42,20 @@ import java.util.regex.Pattern;
  * @param <I> the original input type
  * @param <I1> the mapped input type (often the same as <code>I</code>)
  */
+// We don't want MappingCondition to be an interface. It clashes with Predicate as a functional interface
+@SuppressWarnings("squid:S1610")
 public abstract class MappingCondition<I, I1> {
 
   /**
    * Maps the input in case this condition performs type checking or extracts a value.
    */
-  public abstract MaybeMatch<I1> mapIfMatches(final I input);
+  public abstract MaybeMatch<I1> mapIfMatches(I input);
 
   /**
    * Creates a condition that checks whether the input is of type <code>I1</code>. If so, the
    * condition will cast the input to the type <code>I1</code>
    */
-  public static <I, I1 extends I> MappingCondition<I, I1> is(final Class<I1> type) {
+  public static <I, I1 extends I> MappingCondition<I, I1> is(Class<I1> type) {
     return new TypeMappingCondition<>(type);
   }
 
@@ -62,7 +63,7 @@ public abstract class MappingCondition<I, I1> {
    * Create a condition that checks whether the input satisfies the specified predicate. This
    * condition does not perform any mapping and will return the input as is.
    */
-  public static <I> MappingCondition<I, I> predicate(final Predicate<? super I> predicate) {
+  public static <I> MappingCondition<I, I> predicate(Predicate<? super I> predicate) {
     return new PredicateMappingCondition<>(predicate);
   }
 
@@ -70,7 +71,7 @@ public abstract class MappingCondition<I, I1> {
    * Create a condition that checks whether the input satisfies the specified Hamcrest {@link
    * Matcher}. This condition does not perform any mapping and will return the input as is.
    */
-  public static <I> MappingCondition<I, I> matcher(final Matcher<? super I> matcher) {
+  public static <I> MappingCondition<I, I> matcher(Matcher<? super I> matcher) {
     return predicate(matcher::matches);
   }
 
@@ -79,7 +80,7 @@ public abstract class MappingCondition<I, I1> {
    * Object#equals(Object)}. This condition does not perform any mapping and will return the input
    * as is.
    */
-  public static <I> MappingCondition<I, I> eq(final I value) {
+  public static <I> MappingCondition<I, I> eq(I value) {
     return predicate(i -> Objects.equals(i, value));
   }
 
@@ -95,15 +96,15 @@ public abstract class MappingCondition<I, I1> {
    * Creates a condition that matches strings with the specified regex. This condition maps the
    * input to a {@link MatchResult}.
    */
-  public static MappingCondition<String, MatchResult> regex(final String regex) {
+  public static MappingCondition<String, MatchResult> regex(String regex) {
     return new RegexMappingCondition(regex);
   }
 
   /**
-   * Creates a condition that matches strings with the specified {@link Pattern}. This condition maps the
-   * input to a {@link MatchResult}.
+   * Creates a condition that matches strings with the specified {@link Pattern}. This condition
+   * maps the input to a {@link MatchResult}.
    */
-  public static MappingCondition<String, MatchResult> regex(final Pattern pattern) {
+  public static MappingCondition<String, MatchResult> regex(Pattern pattern) {
     return new RegexMappingCondition(pattern);
   }
 
@@ -111,15 +112,15 @@ public abstract class MappingCondition<I, I1> {
    * Creates a condition that matches strings with the specified regex. This condition maps the
    * input to the first matching group.
    */
-  public static MappingCondition<String, String> regex1(final String regex) {
+  public static MappingCondition<String, String> regex1Group(String regex) {
     return new Regex1MappingCondition(regex);
   }
 
   /**
-   * Creates a condition that matches strings with the specified {@link Pattern}. This condition maps the
-   * input to the first matching group.
+   * Creates a condition that matches strings with the specified {@link Pattern}. This condition
+   * maps the input to the first matching group.
    */
-  public static MappingCondition<String, String> regex1(final Pattern pattern) {
+  public static MappingCondition<String, String> regex1Group(Pattern pattern) {
     return new Regex1MappingCondition(pattern);
   }
 
@@ -127,15 +128,15 @@ public abstract class MappingCondition<I, I1> {
    * Creates a condition that matches strings with the specified regex. This condition maps the
    * input to  a {@link Pair} of the first two matching groups.
    */
-  public static MappingCondition<String, Pair<String, String>> regex2(final String regex) {
+  public static MappingCondition<String, Pair<String, String>> regex2Groups(String regex) {
     return new Regex2MappingCondition(regex);
   }
 
   /**
-   * Creates a condition that matches strings with the specified {@link Pattern}. This condition maps the
-   * input to  a {@link Pair} of the first two matching groups.
+   * Creates a condition that matches strings with the specified {@link Pattern}. This condition
+   * maps the input to  a {@link Pair} of the first two matching groups.
    */
-  public static MappingCondition<String, Pair<String, String>> regex2(final Pattern pattern) {
+  public static MappingCondition<String, Pair<String, String>> regex2Groups(Pattern pattern) {
     return new Regex2MappingCondition(pattern);
   }
 
@@ -169,12 +170,12 @@ public abstract class MappingCondition<I, I1> {
 
     private final Class<I1> type;
 
-    private TypeMappingCondition(final Class<I1> type) {
+    private TypeMappingCondition(Class<I1> type) {
       this.type = type;
     }
 
     @Override
-    public MaybeMatch<I1> mapIfMatches(final I input) {
+    public MaybeMatch<I1> mapIfMatches(I input) {
       return MaybeMatch
           .create(input != null && type.isAssignableFrom(input.getClass()), () -> type.cast(input));
     }
@@ -184,12 +185,12 @@ public abstract class MappingCondition<I, I1> {
 
     private final Predicate<? super I> predicate;
 
-    private PredicateMappingCondition(final Predicate<? super I> predicate) {
+    private PredicateMappingCondition(Predicate<? super I> predicate) {
       this.predicate = predicate;
     }
 
     @Override
-    public MaybeMatch<I> mapIfMatches(final I input) {
+    public MaybeMatch<I> mapIfMatches(I input) {
       return MaybeMatch.create(predicate.test(input), () -> input);
     }
   }
@@ -198,16 +199,16 @@ public abstract class MappingCondition<I, I1> {
 
     private final Pattern pattern;
 
-    RegexMappingCondition(final String regex) {
+    RegexMappingCondition(String regex) {
       pattern = Pattern.compile(regex);
     }
 
-    RegexMappingCondition(final Pattern pattern) {
-        this.pattern = pattern;
+    RegexMappingCondition(Pattern pattern) {
+      this.pattern = pattern;
     }
 
     @Override
-    public MaybeMatch<MatchResult> mapIfMatches(final String input) {
+    public MaybeMatch<MatchResult> mapIfMatches(String input) {
       java.util.regex.Matcher matcher = pattern.matcher(input);
       return MaybeMatch.create(matcher.matches(), () -> matcher);
     }
@@ -217,16 +218,16 @@ public abstract class MappingCondition<I, I1> {
 
     private final RegexMappingCondition delegateCondition;
 
-    Regex1MappingCondition(final String regex) {
+    Regex1MappingCondition(String regex) {
       this.delegateCondition = new RegexMappingCondition(regex);
     }
 
-    Regex1MappingCondition(final Pattern pattern) {
-        this.delegateCondition = new RegexMappingCondition(pattern);
+    Regex1MappingCondition(Pattern pattern) {
+      this.delegateCondition = new RegexMappingCondition(pattern);
     }
 
     @Override
-    public MaybeMatch<String> mapIfMatches(final String input) {
+    public MaybeMatch<String> mapIfMatches(String input) {
       return delegateCondition.mapIfMatches(input)
           .map(r -> r.group(1));
     }
@@ -236,16 +237,16 @@ public abstract class MappingCondition<I, I1> {
 
     private final RegexMappingCondition delegateCondition;
 
-    Regex2MappingCondition(final String regex) {
+    Regex2MappingCondition(String regex) {
       this.delegateCondition = new RegexMappingCondition(regex);
     }
 
-    Regex2MappingCondition(final Pattern pattern) {
-        this.delegateCondition = new RegexMappingCondition(pattern);
+    Regex2MappingCondition(Pattern pattern) {
+      this.delegateCondition = new RegexMappingCondition(pattern);
     }
 
     @Override
-    public MaybeMatch<Pair<String, String>> mapIfMatches(final String input) {
+    public MaybeMatch<Pair<String, String>> mapIfMatches(String input) {
       return delegateCondition.mapIfMatches(input)
           .map(r -> new Pair<>(r.group(1), r.group(2)));
     }
@@ -256,14 +257,15 @@ public abstract class MappingCondition<I, I1> {
     private final MappingCondition<A, A> condition1;
     private final MappingCondition<B, B> condition2;
 
-    PairMappingCondition(final MappingCondition<A, A> condition1,
-        final MappingCondition<B, B> condition2) {
+    PairMappingCondition(
+        MappingCondition<A, A> condition1,
+        MappingCondition<B, B> condition2) {
       this.condition1 = condition1;
       this.condition2 = condition2;
     }
 
     @Override
-    public MaybeMatch<Pair<A, B>> mapIfMatches(final Pair<A, B> input) {
+    public MaybeMatch<Pair<A, B>> mapIfMatches(Pair<A, B> input) {
       MaybeMatch<A> maybeA = condition1.mapIfMatches(input.getA());
       MaybeMatch<B> maybeB = condition2.mapIfMatches(input.getB());
       return MaybeMatch.create(maybeA.matches() && maybeB.matches(),

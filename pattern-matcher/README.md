@@ -71,19 +71,19 @@ new PatternMatcher<Integer, Void>()
 
 ### Regular expression matching
 
-The condition `regex1()` returns the first matching group of a regular expression.
-`regex2()` returns the first two matching groups. Combine with `regex2()` with `when2()`
+The condition `regex1Group()` returns the first matching group of a regular expression.
+`regex2Groups()` returns the first two matching groups. Combine with `regex2Groups()` with `when2()`
 `regex()` returns a `MatchResult` with all matching groups of a regular expression.
 
 > The regex methods also support a `Pattern` which is a compiled representation of a regular expression.
 ```
 import static be.sweetmustard.vinegar.matcher.MappingCondition.regex;
-import static be.sweetmustard.vinegar.matcher.MappingCondition.regex1;
-import static be.sweetmustard.vinegar.matcher.MappingCondition.regex2;
+import static regex1Group;
+import static regex2Groups;
 
 Function<String, Optional<Object>> matcher = new PatternMatcher<String, Object>()
-    .when(regex1("^(\\d+)$")).then(Integer::parseInt)
-    .when2(regex2("^([A-Z]{3}) (\\d+)$")).then((c, v) -> new Money(c, Integer.parseInt(v)))
+    .when(regex1Group("^(\\d+)$")).then(Integer::parseInt)
+    .when2(regex2Groups("^([A-Z]{3}) (\\d+)$")).then((c, v) -> new Money(c, Integer.parseInt(v)))
     .when(regex("^(\\d{4})-(\\d{2})-(\\d{2})$")).then(m -> LocalDate.of(
         Integer.parseInt(m.group(1)), 
         Integer.parseInt(m.group(2)),

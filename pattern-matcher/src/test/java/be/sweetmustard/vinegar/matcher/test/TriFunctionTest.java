@@ -1,7 +1,8 @@
-package be.sweetmustard.vinegar.matcher;
+package be.sweetmustard.vinegar.matcher.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import be.sweetmustard.vinegar.matcher.TriFunction;
 import org.junit.jupiter.api.Test;
 
 class TriFunctionTest {

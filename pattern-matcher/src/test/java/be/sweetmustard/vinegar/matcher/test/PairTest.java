@@ -1,7 +1,8 @@
-package be.sweetmustard.vinegar.matcher;
+package be.sweetmustard.vinegar.matcher.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import be.sweetmustard.vinegar.matcher.Pair;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
