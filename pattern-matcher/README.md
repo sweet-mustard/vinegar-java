@@ -7,15 +7,15 @@ A pattern matcher typically matches an input object for one or more patterns.
 It can either return a result from that, or perform an action.
 
 Pattern matchers are immutable and can safely be reused and shared across threads.
-Since there is a cost to creating pattern matchers, especially with regular expression matching,
-it is advised to create your pattern matcher as a constant and reuse it as much as possible.
 
+> Since there is a cost to creating pattern matchers, it is advised to create it as a constant and reuse it as much as possible.    
+    
 ## Features
 
 ### Equality and predicate matching
 
 The pattern matcher's `when()` method accepts exact values and `Predicate`s. 
-Furthermore it supports Hamcrest `Matcher`s or pattern matcher specific `Condition`s.
+Furthermore it supports Hamcrest `Matcher`s or pattern matcher specific `MappingCondition`s.
 Hamcrest is not required, it is an optional dependency.
 
 ```
@@ -75,6 +75,7 @@ The condition `regex1()` returns the first matching group of a regular expressio
 `regex2()` returns the first two matching groups. Combine with `regex2()` with `when2()`
 `regex()` returns a `MatchResult` with all matching groups of a regular expression.
 
+> The regex methods also support a `Pattern` which is a compiled representation of a regular expression.
 ```
 import static be.sweetmustard.vinegar.matcher.MappingCondition.regex;
 import static be.sweetmustard.vinegar.matcher.MappingCondition.regex1;
