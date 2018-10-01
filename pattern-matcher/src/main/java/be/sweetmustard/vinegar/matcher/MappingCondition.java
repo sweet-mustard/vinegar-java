@@ -127,6 +127,19 @@ public abstract class MappingCondition<I, I1> {
     return new PairMappingCondition<>(condition1, condition2);
   }
 
+  /**
+   * Creates a condition that matches a {@link Pair}. It checks both values of the pair with the
+   * specified conditions. This condition does not perform any mapping and will return the input as
+   * is.
+   *
+   * @param condition1 the condition to apply to the first value of the pair
+   * @param condition2 the condition to apply to the second value of the pair
+   */
+  public static <A, B> MappingCondition<Pair<A, B>, Pair<A, B>> pair(
+      Predicate<A> condition1, Predicate<B> condition2) {
+    return new PairMappingCondition<>(predicate(condition1), predicate(condition2));
+  }
+
   static final class TypeMappingCondition<I, I1 extends I> extends MappingCondition<I, I1> {
 
     private final Class<I1> type;

@@ -79,7 +79,7 @@ class PatternMatcherTest {
   void thenDoShouldConsumeInput() {
     List<Integer> values = new ArrayList<>();
     new PatternMatcher<Integer, Void>()
-        .when(i -> i <= 5).thenDo(v -> values.add(v * v))
+        .when(i -> i < 5).thenDo(v -> values.add(v * v))
         .when(i -> i > 5).thenDo(values::add)
         .otherwiseDo(v -> values.add(v + 1))
         .apply(4);
@@ -88,7 +88,30 @@ class PatternMatcherTest {
   }
 
   @Test
-  void extractShouldExtractInput() {
+  void otherwiseDoShouldConsumeInput() {
+    List<Integer> values = new ArrayList<>();
+    new PatternMatcher<Integer, Void>()
+        .when(i -> i < 5).thenDo(v -> values.add(v * v))
+        .when(i -> i > 5).thenDo(values::add)
+        .otherwiseDo(v -> values.add(v + 1))
+        .apply(5);
+
+    assertEquals(Collections.singletonList(6), values);
+  }
+
+  @Test
+  void thenDoWithBiConsumerShouldConsumeInput() {
+    List<Integer> values = new ArrayList<>();
+    new PatternMatcher<Pair<Integer, Integer>, Void>()
+        .when2(pair(i -> i < 5, i -> i > 5)).thenDo((a, b) -> values.add(a + b))
+        .otherwiseDo(v -> values.add(1))
+        .apply(new Pair<>(3, 6));
+
+    assertEquals(Collections.singletonList(9), values);
+  }
+
+  @Test
+  void extractPairShouldExtractInput() {
     String result = new PatternMatcher<Shape, String>()
         .when(is(Circle.class)).then(extract(r -> "Circle (radius = " + r + ")"))
         .when(is(Rectangle.class))
@@ -97,6 +120,22 @@ class PatternMatcherTest {
         .apply(new Rectangle(2.5, 4));
 
     assertEquals("Rectangle (width = 2.5, height = 4.0)", result);
+  }
+
+  @Test
+  void extractTripletShouldExtractInput() {
+    String result = new PatternMatcher<Shape, String>()
+        .when(is(Circle.class)).then(extract(r -> "Circle (radius = " + r + ")"))
+        .when(is(Rectangle.class))
+        .then(extract((w, h) -> "Rectangle (width = " + w + ", height = " + h + ")"))
+        .when(is(Triangle.class))
+        .then(extract(
+            (l1, l2, l3) -> "Triangle (length1 = " + l1 + ", length2 = " + l2 + ", length3 = " + l3
+                + ")"))
+        .otherwise(s -> "Unknown shape (area = " + s.getArea() + ")")
+        .apply(new Triangle(5, 4, 3));
+
+    assertEquals("Triangle (length1 = 5.0, length2 = 4.0, length3 = 3.0)", result);
   }
 
   @Test
@@ -233,6 +272,30 @@ class PatternMatcherTest {
     @Override
     public int hashCode() {
       return Objects.hash(width, height);
+    }
+  }
+
+  static class Triangle implements Shape<Triplet<Double, Double, Double>> {
+
+    final double length1;
+    final double length2;
+    final double length3;
+
+    public Triangle(double length1, double length2, double length3) {
+      this.length1 = length1;
+      this.length2 = length2;
+      this.length3 = length3;
+    }
+
+    @Override
+    public double getArea() {
+      double s = (length1 + length2 + length3) / 2;
+      return Math.sqrt(s * (s - length1) * (s - length2) * (s - length3));
+    }
+
+    @Override
+    public Triplet<Double, Double, Double> extract() {
+      return new Triplet<>(length1, length2, length3);
     }
   }
 }

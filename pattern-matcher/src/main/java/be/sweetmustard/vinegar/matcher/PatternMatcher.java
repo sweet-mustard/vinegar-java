@@ -50,8 +50,9 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
   public PatternMatcher() {
   }
 
-  private PatternMatcher(final PatternMatcher<? super I, O> previousMatcher,
-      final Case<? super I, ?, O> newCase) {
+  private PatternMatcher(
+      PatternMatcher<? super I, O> previousMatcher,
+      Case<? super I, ?, O> newCase) {
     cases.addAll(previousMatcher.cases);
     cases.add(newCase);
   }
