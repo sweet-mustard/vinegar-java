@@ -72,7 +72,7 @@ new PatternMatcher<Integer, Void>()
 ### Regular expression matching
 
 The condition `regex1Group()` returns the first matching group of a regular expression.
-`regex2Groups()` returns the first two matching groups. Combine with `regex2Groups()` with `when2()`
+`regex2Groups()` returns the first two matching groups. Combine with `regex2Groups()` with `whenPair()`
 `regex()` returns a `MatchResult` with all matching groups of a regular expression.
 
 > The regex methods also support a `Pattern` which is a compiled representation of a regular expression.
