@@ -96,6 +96,5 @@ public interface MaybeMatch<T> {
     public <U> MaybeMatch<U> map(final Function<? super Object, ? extends U> mapper) {
       return (MaybeMatch<U>) this;
     }
-
   }
 }

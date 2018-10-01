@@ -45,9 +45,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
+
 import org.junit.jupiter.api.Test;
 
 class PatternMatcherTest {
+
+  private static final String CIRCLE_REGEX = "Circle\\(([\\d.]+)\\)";
+
+  private static final String RECTANGLE_REGEX = "Rectangle\\(([\\d.]+), ([\\d.]+)\\)";
+
+  private static final Pattern CIRCLE_PATTERN = Pattern.compile(CIRCLE_REGEX);
+
+  private static final Pattern RECTANGLE_PATTERN = Pattern.compile(RECTANGLE_REGEX);
 
   @Test
   void matchTypeShouldConvertToType() {
@@ -141,8 +151,8 @@ class PatternMatcherTest {
   @Test
   void regexShouldEvaluateRegex() {
     Optional<Shape> result = new PatternMatcher<String, Shape>()
-        .when(regex("Circle\\(([\\d.]+)\\)")).then(m -> new Circle(parseDouble(m.group(1))))
-        .when(regex("Rectangle\\(([\\d.]+), ([\\d.]+)\\)"))
+        .when(regex(CIRCLE_REGEX)).then(m -> new Circle(parseDouble(m.group(1))))
+        .when(regex(RECTANGLE_REGEX))
         .then(m -> new Rectangle(parseDouble(m.group(1)), parseDouble(m.group(2))))
         .apply("Rectangle(3.0, 5.5)");
 
@@ -150,10 +160,21 @@ class PatternMatcherTest {
   }
 
   @Test
+  void patternShouldEvaluatePattern() {
+    Optional<Shape> result = new PatternMatcher<String, Shape>()
+            .when(regex(CIRCLE_PATTERN)).then(m -> new Circle(parseDouble(m.group(1))))
+            .when(regex(RECTANGLE_PATTERN))
+            .then(m -> new Rectangle(parseDouble(m.group(1)), parseDouble(m.group(2))))
+            .apply("Rectangle(3.0, 5.5)");
+
+    assertEquals(new Rectangle(3.0, 5.5), result.orElse(null));
+  }
+
+  @Test
   void regex1ShouldReturnGroup1() {
     Optional<Shape> result = new PatternMatcher<String, Shape>()
-        .when(regex1("Circle\\(([\\d.]+)\\)")).then(r -> new Circle(parseDouble(r)))
-        .when(regex("Rectangle\\(([\\d.]+), ([\\d.]+)\\)"))
+        .when(regex1(CIRCLE_REGEX)).then(r -> new Circle(parseDouble(r)))
+        .when(regex(RECTANGLE_REGEX))
         .then(m -> new Rectangle(parseDouble(m.group(1)), parseDouble(m.group(2))))
         .apply("Rectangle(3.0, 5.5)");
 
@@ -163,8 +184,8 @@ class PatternMatcherTest {
   @Test
   void regex2ShouldReturnGroups1And2() {
     Optional<Shape> result = new PatternMatcher<String, Shape>()
-        .when(regex("Circle\\(([\\d.]+)\\)")).then(m -> new Circle(parseDouble(m.group(1))))
-        .when2(regex2("Rectangle\\(([\\d.]+), ([\\d.]+)\\)"))
+        .when(regex(CIRCLE_REGEX)).then(m -> new Circle(parseDouble(m.group(1))))
+        .when2(regex2(RECTANGLE_REGEX))
         .then((w, h) -> new Rectangle(parseDouble(w), parseDouble(h)))
         .apply("Rectangle(3.0, 5.5)");
 

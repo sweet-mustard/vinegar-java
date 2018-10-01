@@ -27,11 +27,12 @@
 
 package be.sweetmustard.vinegar.matcher;
 
+import org.hamcrest.Matcher;
+
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
-import org.hamcrest.Matcher;
 
 /**
  * A condition to pass to {@link PatternMatcher#when(MappingCondition)}. The condition can
@@ -99,6 +100,14 @@ public abstract class MappingCondition<I, I1> {
   }
 
   /**
+   * Creates a condition that matches strings with the specified {@link Pattern}. This condition maps the
+   * input to a {@link MatchResult}.
+   */
+  public static MappingCondition<String, MatchResult> regex(final Pattern pattern) {
+    return new RegexMappingCondition(pattern);
+  }
+
+  /**
    * Creates a condition that matches strings with the specified regex. This condition maps the
    * input to the first matching group.
    */
@@ -107,11 +116,27 @@ public abstract class MappingCondition<I, I1> {
   }
 
   /**
+   * Creates a condition that matches strings with the specified {@link Pattern}. This condition maps the
+   * input to the first matching group.
+   */
+  public static MappingCondition<String, String> regex1(final Pattern pattern) {
+    return new Regex1MappingCondition(pattern);
+  }
+
+  /**
    * Creates a condition that matches strings with the specified regex. This condition maps the
    * input to  a {@link Pair} of the first two matching groups.
    */
   public static MappingCondition<String, Pair<String, String>> regex2(final String regex) {
     return new Regex2MappingCondition(regex);
+  }
+
+  /**
+   * Creates a condition that matches strings with the specified {@link Pattern}. This condition maps the
+   * input to  a {@link Pair} of the first two matching groups.
+   */
+  public static MappingCondition<String, Pair<String, String>> regex2(final Pattern pattern) {
+    return new Regex2MappingCondition(pattern);
   }
 
   /**
@@ -177,6 +202,10 @@ public abstract class MappingCondition<I, I1> {
       pattern = Pattern.compile(regex);
     }
 
+    RegexMappingCondition(final Pattern pattern) {
+        this.pattern = pattern;
+    }
+
     @Override
     public MaybeMatch<MatchResult> mapIfMatches(final String input) {
       java.util.regex.Matcher matcher = pattern.matcher(input);
@@ -192,6 +221,10 @@ public abstract class MappingCondition<I, I1> {
       this.delegateCondition = new RegexMappingCondition(regex);
     }
 
+    Regex1MappingCondition(final Pattern pattern) {
+        this.delegateCondition = new RegexMappingCondition(pattern);
+    }
+
     @Override
     public MaybeMatch<String> mapIfMatches(final String input) {
       return delegateCondition.mapIfMatches(input)
@@ -205,6 +238,10 @@ public abstract class MappingCondition<I, I1> {
 
     Regex2MappingCondition(final String regex) {
       this.delegateCondition = new RegexMappingCondition(regex);
+    }
+
+    Regex2MappingCondition(final Pattern pattern) {
+        this.delegateCondition = new RegexMappingCondition(pattern);
     }
 
     @Override
