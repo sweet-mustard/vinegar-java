@@ -119,7 +119,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
    * @return A <code>CaseBuilder</code> for chaining the result of this case
    * @see MappingCondition
    */
-  public <I1, I2> Case2Builder<I, I1, I2, O> when2(
+  public <I1, I2> Case2Builder<I, I1, I2, O> whenPair(
       MappingCondition<? super I, Pair<I1, I2>> condition) {
     return new Case2Builder<>(this, condition);
   }

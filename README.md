@@ -56,7 +56,7 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/sweet-mustard/vinegar-java/tags). 
 
-## Authors
+## Contributors
 
 * **Michael Devloo** - *Pattern Matcher* - [Sweet Mustard](https://github.com/sweet-mustard)
 * **Stijn Van Bael** - *Pattern Matcher* - [Sweet Mustard](https://github.com/sweet-mustard)

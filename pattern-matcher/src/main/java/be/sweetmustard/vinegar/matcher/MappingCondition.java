@@ -149,7 +149,8 @@ public abstract class MappingCondition<I, I1> {
    * @param condition2 the condition to apply to the second value of the pair
    */
   public static <A, B> MappingCondition<Pair<A, B>, Pair<A, B>> pair(
-      MappingCondition<A, A> condition1, MappingCondition<B, B> condition2) {
+      MappingCondition<? super A, ? extends A> condition1,
+      MappingCondition<? super B, ? extends B> condition2) {
     return new PairMappingCondition<>(condition1, condition2);
   }
 
@@ -162,7 +163,7 @@ public abstract class MappingCondition<I, I1> {
    * @param condition2 the condition to apply to the second value of the pair
    */
   public static <A, B> MappingCondition<Pair<A, B>, Pair<A, B>> pair(
-      Predicate<A> condition1, Predicate<B> condition2) {
+      Predicate<? super A> condition1, Predicate<? super B> condition2) {
     return new PairMappingCondition<>(predicate(condition1), predicate(condition2));
   }
 
@@ -254,20 +255,20 @@ public abstract class MappingCondition<I, I1> {
 
   static final class PairMappingCondition<A, B> extends MappingCondition<Pair<A, B>, Pair<A, B>> {
 
-    private final MappingCondition<A, A> condition1;
-    private final MappingCondition<B, B> condition2;
+    private final MappingCondition<? super A, ? extends A> condition1;
+    private final MappingCondition<? super B, ? extends B> condition2;
 
     PairMappingCondition(
-        MappingCondition<A, A> condition1,
-        MappingCondition<B, B> condition2) {
+        MappingCondition<? super A, ? extends A> condition1,
+        MappingCondition<? super B, ? extends B> condition2) {
       this.condition1 = condition1;
       this.condition2 = condition2;
     }
 
     @Override
     public MaybeMatch<Pair<A, B>> mapIfMatches(Pair<A, B> input) {
-      MaybeMatch<A> maybeA = condition1.mapIfMatches(input.getA());
-      MaybeMatch<B> maybeB = condition2.mapIfMatches(input.getB());
+      MaybeMatch<? extends A> maybeA = condition1.mapIfMatches(input.getA());
+      MaybeMatch<? extends B> maybeB = condition2.mapIfMatches(input.getB());
       return MaybeMatch.create(maybeA.matches() && maybeB.matches(),
           () -> new Pair<>(maybeA.getValue(), maybeB.getValue()));
     }

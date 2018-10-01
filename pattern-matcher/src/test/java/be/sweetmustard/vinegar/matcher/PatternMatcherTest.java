@@ -25,7 +25,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package be.sweetmustard.vinegar.matcher.test;
+package be.sweetmustard.vinegar.matcher;
 
 import static be.sweetmustard.vinegar.matcher.MappingCondition.any;
 import static be.sweetmustard.vinegar.matcher.MappingCondition.eq;
@@ -37,11 +37,6 @@ import static java.lang.Double.parseDouble;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import be.sweetmustard.vinegar.matcher.Extractable;
-import be.sweetmustard.vinegar.matcher.MappingCondition;
-import be.sweetmustard.vinegar.matcher.Pair;
-import be.sweetmustard.vinegar.matcher.PatternMatcher;
-import be.sweetmustard.vinegar.matcher.Triplet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -115,7 +110,7 @@ class PatternMatcherTest {
   void thenDoWithBiConsumerShouldConsumeInput() {
     List<Integer> values = new ArrayList<>();
     new PatternMatcher<Pair<Integer, Integer>, Void>()
-        .when2(pair(i -> i < 5, i -> i > 5)).thenDo((a, b) -> values.add(a + b))
+        .whenPair(pair(i -> i < 5, i -> i > 5)).thenDo((a, b) -> values.add(a + b))
         .otherwiseDo(v -> values.add(1))
         .apply(new Pair<>(3, 6));
 
@@ -187,7 +182,7 @@ class PatternMatcherTest {
   void regex2ShouldReturnGroups1And2() {
     Optional<Shape> result = new PatternMatcher<String, Shape>()
         .when(regex(CIRCLE_REGEX)).then(m -> new Circle(parseDouble(m.group(1))))
-        .when2(MappingCondition.regex2Groups(RECTANGLE_REGEX))
+        .whenPair(MappingCondition.regex2Groups(RECTANGLE_REGEX))
         .then((w, h) -> new Rectangle(parseDouble(w), parseDouble(h)))
         .apply("Rectangle(3.0, 5.5)");
 

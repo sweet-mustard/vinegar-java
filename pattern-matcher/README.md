@@ -83,7 +83,7 @@ import static regex2Groups;
 
 Function<String, Optional<Object>> matcher = new PatternMatcher<String, Object>()
     .when(regex1Group("^(\\d+)$")).then(Integer::parseInt)
-    .when2(regex2Groups("^([A-Z]{3}) (\\d+)$")).then((c, v) -> new Money(c, Integer.parseInt(v)))
+    .whenPair(regex2Groups("^([A-Z]{3}) (\\d+)$")).then((c, v) -> new Money(c, Integer.parseInt(v)))
     .when(regex("^(\\d{4})-(\\d{2})-(\\d{2})$")).then(m -> LocalDate.of(
         Integer.parseInt(m.group(1)), 
         Integer.parseInt(m.group(2)),
