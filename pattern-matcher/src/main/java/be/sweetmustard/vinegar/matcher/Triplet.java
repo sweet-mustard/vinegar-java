@@ -41,7 +41,7 @@ public final class Triplet<A, B, C> {
   private final B b;
   private final C c;
 
-  public Triplet(final A a, final B b, final C c) {
+  public Triplet(A a, B b, C c) {
     this.a = a;
     this.b = b;
     this.c = c;
@@ -69,7 +69,7 @@ public final class Triplet<A, B, C> {
   }
 
   @Override
-  public boolean equals(final Object o) {
+  public boolean equals(Object o) {
     if (this == o) {
       return true;
     }

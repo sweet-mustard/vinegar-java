@@ -58,7 +58,7 @@ public interface MaybeMatch<T> {
 
     private final T value;
 
-    Match(final T value) {
+    Match(T value) {
       this.value = value;
     }
 
@@ -73,7 +73,7 @@ public interface MaybeMatch<T> {
     }
 
     @Override
-    public <U> MaybeMatch<U> map(final Function<? super T, ? extends U> mapper) {
+    public <U> MaybeMatch<U> map(Function<? super T, ? extends U> mapper) {
       return new Match<>(mapper.apply(value));
     }
   }
@@ -93,9 +93,8 @@ public interface MaybeMatch<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> MaybeMatch<U> map(final Function<? super Object, ? extends U> mapper) {
+    public <U> MaybeMatch<U> map(Function<? super Object, ? extends U> mapper) {
       return (MaybeMatch<U>) this;
     }
-
   }
 }

@@ -50,8 +50,9 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
   public PatternMatcher() {
   }
 
-  private PatternMatcher(final PatternMatcher<? super I, O> previousMatcher,
-      final Case<? super I, ?, O> newCase) {
+  private PatternMatcher(
+      PatternMatcher<? super I, O> previousMatcher,
+      Case<? super I, ?, O> newCase) {
     cases.addAll(previousMatcher.cases);
     cases.add(newCase);
   }
@@ -85,7 +86,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
   public static <I extends Extractable<Pair<E1, E2>>, E1, E2, O> Function<I, O> extract(
       final BiFunction<? super E1, ? super E2, ? extends O> extractedValuesMapper) {
     return input -> {
-      Pair<E1, E2> pair = input.extract();
+      final Pair<E1, E2> pair = input.extract();
       return extractedValuesMapper.apply(pair.getA(), pair.getB());
     };
   }
@@ -104,7 +105,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
   public static <I extends Extractable<Triplet<E1, E2, E3>>, E1, E2, E3, O> Function<I, O> extract(
       final TriFunction<? super E1, ? super E2, ? super E3, ? extends O> extractedValuesMapper) {
     return input -> {
-      Triplet<E1, E2, E3> triplet = input.extract();
+      final Triplet<E1, E2, E3> triplet = input.extract();
       return extractedValuesMapper.apply(triplet.getA(), triplet.getB(), triplet.getC());
     };
   }
@@ -118,8 +119,8 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
    * @return A <code>CaseBuilder</code> for chaining the result of this case
    * @see MappingCondition
    */
-  public final <I1, I2> Case2Builder<I, I1, I2, O> when2(
-      final MappingCondition<? super I, Pair<I1, I2>> condition) {
+  public <I1, I2> Case2Builder<I, I1, I2, O> whenPair(
+      MappingCondition<? super I, Pair<I1, I2>> condition) {
     return new Case2Builder<>(this, condition);
   }
 
@@ -133,7 +134,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
    * @return A <code>CaseBuilder</code> for chaining the result of this case
    * @see MappingCondition
    */
-  public final <I1> CaseBuilder<I, I1, O> when(final MappingCondition<? super I, I1> condition) {
+  public <I1> CaseBuilder<I, I1, O> when(MappingCondition<? super I, I1> condition) {
     return new CaseBuilder<>(this, condition);
   }
 
@@ -142,7 +143,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
    *
    * @return A <code>CaseBuilder</code> for chaining the result of this case
    */
-  public final CaseBuilder<I, I, O> when(final I value) {
+  public CaseBuilder<I, I, O> when(I value) {
     return new CaseBuilder<>(this, eq(value));
   }
 
@@ -151,7 +152,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
    *
    * @return A <code>CaseBuilder</code> for chaining the result of this case
    */
-  public final CaseBuilder<I, I, O> when(final Predicate<? super I> predicate) {
+  public CaseBuilder<I, I, O> when(Predicate<? super I> predicate) {
     return new CaseBuilder<>(this, MappingCondition.predicate(predicate));
   }
 
@@ -160,7 +161,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
    *
    * @return A <code>CaseBuilder</code> for chaining the result of this case
    */
-  public final CaseBuilder<I, I, O> match(final Matcher<? super I> matcher) {
+  public CaseBuilder<I, I, O> match(Matcher<? super I> matcher) {
     return new CaseBuilder<>(this, MappingCondition.matcher(matcher));
   }
 
@@ -174,7 +175,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
    * @return a <code>ClosedMatcher</code> that can be called using the {@link
    * ClosedMatcher#apply(I)} method
    */
-  public final ClosedMatcher<I, O> otherwise(final Function<? super I, ? extends O> mapper) {
+  public ClosedMatcher<I, O> otherwise(Function<? super I, ? extends O> mapper) {
     return new ClosedMatcher<>(cases, mapper);
   }
 
@@ -186,7 +187,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
    * @return a <code>ClosedMatcher</code> that can be called using the {@link
    * ClosedMatcher#apply(I)} method
    */
-  public final ClosedMatcher<I, O> otherwiseDo(final Consumer<? super I> consumer) {
+  public ClosedMatcher<I, O> otherwiseDo(Consumer<? super I> consumer) {
     return new ClosedMatcher<>(cases, input -> {
       consumer.accept(input);
       return null;
@@ -201,7 +202,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
    * @return a <code>ClosedMatcher</code> that can be called using the {@link
    * ClosedMatcher#apply(I)} method
    */
-  public final ClosedMatcher<I, O> otherwise(final O value) {
+  public ClosedMatcher<I, O> otherwise(O value) {
     return new ClosedMatcher<>(cases, ignored -> value);
   }
 
@@ -213,7 +214,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
    * <code>Optional.empty()</code> if none of the cases match.
    */
   @Override
-  public final Optional<O> apply(final I input) {
+  public Optional<O> apply(I input) {
     return cases.stream()
         .map(c -> c.mapIfMatches(input))
         .filter(MaybeMatch::matches)
@@ -231,8 +232,9 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
     private final PatternMatcher<? super I, O> patternMatcher;
     private final MappingCondition<? super I, I1> condition;
 
-    private CaseBuilder(final PatternMatcher<? super I, O> patternMatcher,
-        final MappingCondition<? super I, I1> condition) {
+    private CaseBuilder(
+        PatternMatcher<? super I, O> patternMatcher,
+        MappingCondition<? super I, I1> condition) {
       this.patternMatcher = patternMatcher;
       this.condition = condition;
     }
@@ -244,7 +246,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      * @param mapper a <code>Function</code> that transforms the input into the output
      * @return a new <code>PatternMatcher</code> with this case added.
      */
-    public final PatternMatcher<I, O> then(final Function<? super I1, ? extends O> mapper) {
+    public PatternMatcher<I, O> then(Function<? super I1, ? extends O> mapper) {
       return new PatternMatcher<>(patternMatcher, new PatternMatcher.Case<>(condition, mapper));
     }
 
@@ -254,7 +256,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      *
      * @return a new <code>PatternMatcher</code> with this case added.
      */
-    public final PatternMatcher<I, O> then(final O value) {
+    public PatternMatcher<I, O> then(O value) {
       return new PatternMatcher<>(patternMatcher,
           new PatternMatcher.Case<>(condition, ignored -> value));
     }
@@ -265,7 +267,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      *
      * @return a new <code>PatternMatcher</code> with this case added.
      */
-    public final PatternMatcher<I, O> thenDo(final Consumer<I1> consumer) {
+    public PatternMatcher<I, O> thenDo(Consumer<? super I1> consumer) {
       return new PatternMatcher<>(patternMatcher, new PatternMatcher.Case<>(condition, input -> {
         consumer.accept(input);
         return null;
@@ -278,8 +280,9 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
     private final PatternMatcher<? super I, O> patternMatcher;
     private final MappingCondition<? super I, Pair<I1, I2>> condition;
 
-    private Case2Builder(final PatternMatcher<? super I, O> patternMatcher,
-        final MappingCondition<? super I, Pair<I1, I2>> condition) {
+    private Case2Builder(
+        PatternMatcher<? super I, O> patternMatcher,
+        MappingCondition<? super I, Pair<I1, I2>> condition) {
       this.patternMatcher = patternMatcher;
       this.condition = condition;
     }
@@ -291,8 +294,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      * @param mapper a <code>Function</code> that transforms the input into the output
      * @return a new <code>PatternMatcher</code> with this case added.
      */
-    public final PatternMatcher<I, O> then(
-        final BiFunction<? super I1, ? super I2, ? extends O> mapper) {
+    public PatternMatcher<I, O> then(BiFunction<? super I1, ? super I2, ? extends O> mapper) {
       return new PatternMatcher<>(patternMatcher,
           new PatternMatcher.Case<>(condition, i -> mapper.apply(i.getA(), i.getB())));
     }
@@ -303,7 +305,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      *
      * @return a new <code>PatternMatcher</code> with this case added.
      */
-    public final PatternMatcher<I, O> thenDo(final BiConsumer<? super I1, ? super I2> consumer) {
+    public PatternMatcher<I, O> thenDo(BiConsumer<? super I1, ? super I2> consumer) {
       return new PatternMatcher<>(patternMatcher, new PatternMatcher.Case<>(condition, i -> {
         consumer.accept(i.getA(), i.getB());
         return null;
@@ -314,16 +316,17 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
   private static final class Case<I, I1, O> {
 
     private final MappingCondition<? super I, I1> condition;
-    private Function<? super I1, ? extends O> mapper;
+    private final Function<? super I1, ? extends O> mapper;
 
-    Case(final MappingCondition<? super I, I1> condition,
-        final Function<? super I1, ? extends O> mapper) {
+    Case(
+        MappingCondition<? super I, I1> condition,
+        Function<? super I1, ? extends O> mapper) {
       this.condition = condition;
       this.mapper = mapper;
     }
 
-    final MaybeMatch<O> mapIfMatches(final I input) {
-      return condition.mapIfMatches(input).map(v -> mapper.apply(v));
+    MaybeMatch<O> mapIfMatches(I input) {
+      return condition.mapIfMatches(input).map(mapper::apply);
     }
   }
 
@@ -332,8 +335,9 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
     private final List<Case<? super I, ?, O>> cases = new ArrayList<>();
     private final Function<? super I, ? extends O> lastMapper;
 
-    ClosedMatcher(final List<Case<? super I, ?, O>> cases,
-        final Function<? super I, ? extends O> lastMapper) {
+    ClosedMatcher(
+        List<Case<? super I, ?, O>> cases,
+        Function<? super I, ? extends O> lastMapper) {
       this.lastMapper = lastMapper;
       this.cases.addAll(cases);
     }
@@ -345,7 +349,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      * @return The result returned by the first case that matched
      */
     @Override
-    public final O apply(final I input) {
+    public O apply(I input) {
       Optional<MaybeMatch<O>> matchingCase = cases.stream()
           .map(c -> c.mapIfMatches(input))
           .filter(MaybeMatch::matches)

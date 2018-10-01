@@ -35,7 +35,7 @@ import java.util.function.BiFunction;
  * extracted from the input.
  *
  * @see MappingCondition#pair(MappingCondition, MappingCondition)
- * @see MappingCondition#regex2(String)
+ * @see MappingCondition#regex2Groups(String)
  * @see PatternMatcher#extract(BiFunction)
  */
 public final class Pair<T1, T2> {
@@ -43,7 +43,7 @@ public final class Pair<T1, T2> {
   private final T1 a;
   private final T2 b;
 
-  public Pair(final T1 a, final T2 b) {
+  public Pair(T1 a, T2 b) {
     this.a = a;
     this.b = b;
   }
@@ -63,7 +63,7 @@ public final class Pair<T1, T2> {
   }
 
   @Override
-  public boolean equals(final Object o) {
+  public boolean equals(Object o) {
     if (this == o) {
       return true;
     }
