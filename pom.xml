@@ -28,7 +28,7 @@
     <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
     <jacoco-maven-plugin.version>0.8.2</jacoco-maven-plugin.version>
     <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
-    <nexus-guava.version>14.0.1</nexus-guava.version>
+    <nexus-guava.version>16.0.1</nexus-guava.version>
   </properties>
 
   <distributionManagement>
