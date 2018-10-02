@@ -7,6 +7,7 @@
     <groupId>be.sweetmustard.vinegar</groupId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
+  <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>vinegar-all</artifactId>
