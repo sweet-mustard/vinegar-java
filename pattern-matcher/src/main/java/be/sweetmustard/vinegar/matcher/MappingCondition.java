@@ -27,6 +27,8 @@
 
 package be.sweetmustard.vinegar.matcher;
 
+import be.sweetmustard.vinegar.matcher.MaybeMatch.Match;
+import be.sweetmustard.vinegar.matcher.MaybeMatch.NoMatch;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.regex.MatchResult;
@@ -48,12 +50,21 @@ public abstract class MappingCondition<I, I1> {
 
   /**
    * Maps the input in case this condition performs type checking or extracts a value.
+   *
+   * @param input the input to match and map
+   * @return A {@link Match} with the mapped value, or {@link NoMatch} in case the input does not
+   * match.
    */
   public abstract MaybeMatch<I1> mapIfMatches(I input);
 
   /**
    * Creates a condition that checks whether the input is of type <code>I1</code>. If so, the
    * condition will cast the input to the type <code>I1</code>
+   *
+   * @param type the type to match
+   * @param <I> the original input type
+   * @param <I1> the subtype of the input to match
+   * @return the created <code>MappingCondition</code>
    */
   public static <I, I1 extends I> MappingCondition<I, I1> is(Class<I1> type) {
     return new TypeMappingCondition<>(type);
@@ -62,6 +73,10 @@ public abstract class MappingCondition<I, I1> {
   /**
    * Create a condition that checks whether the input satisfies the specified predicate. This
    * condition does not perform any mapping and will return the input as is.
+   *
+   * @param predicate the predicate to check
+   * @param <I> the input type
+   * @return the created <code>MappingCondition</code>
    */
   public static <I> MappingCondition<I, I> predicate(Predicate<? super I> predicate) {
     return new PredicateMappingCondition<>(predicate);
@@ -70,6 +85,10 @@ public abstract class MappingCondition<I, I1> {
   /**
    * Create a condition that checks whether the input satisfies the specified Hamcrest {@link
    * Matcher}. This condition does not perform any mapping and will return the input as is.
+   *
+   * @param matcher the matcher to check
+   * @param <I> the input type
+   * @return the created <code>MappingCondition</code>
    */
   public static <I> MappingCondition<I, I> matcher(Matcher<? super I> matcher) {
     return predicate(matcher::matches);
@@ -79,6 +98,10 @@ public abstract class MappingCondition<I, I1> {
    * Create a condition that checks whether the input is equal to the specified value using {@link
    * Object#equals(Object)}. This condition does not perform any mapping and will return the input
    * as is.
+   *
+   * @param value the value the input is expected to be equal with
+   * @param <I> the input type
+   * @return the created <code>MappingCondition</code>
    */
   public static <I> MappingCondition<I, I> eq(I value) {
     return predicate(i -> Objects.equals(i, value));
@@ -87,6 +110,9 @@ public abstract class MappingCondition<I, I1> {
   /**
    * Creates a condition that will match any value. This condition does not perform any mapping and
    * will return the input as is.
+   *
+   * @param <I> the input type
+   * @return the created <code>MappingCondition</code>
    */
   public static <I> MappingCondition<I, I> any() {
     return predicate(i -> true);
@@ -95,6 +121,9 @@ public abstract class MappingCondition<I, I1> {
   /**
    * Creates a condition that matches strings with the specified regex. This condition maps the
    * input to a {@link MatchResult}.
+   *
+   * @param regex the regular expression to match
+   * @return the created <code>MappingCondition</code>
    */
   public static MappingCondition<String, MatchResult> regex(String regex) {
     return new RegexMappingCondition(regex);
@@ -103,6 +132,9 @@ public abstract class MappingCondition<I, I1> {
   /**
    * Creates a condition that matches strings with the specified {@link Pattern}. This condition
    * maps the input to a {@link MatchResult}.
+   *
+   * @param pattern the regular expression pattern to match
+   * @return the created <code>MappingCondition</code>
    */
   public static MappingCondition<String, MatchResult> regex(Pattern pattern) {
     return new RegexMappingCondition(pattern);
@@ -111,6 +143,9 @@ public abstract class MappingCondition<I, I1> {
   /**
    * Creates a condition that matches strings with the specified regex. This condition maps the
    * input to the first matching group.
+   *
+   * @param regex the regular expression to match
+   * @return the created <code>MappingCondition</code>
    */
   public static MappingCondition<String, String> regex1Group(String regex) {
     return new Regex1MappingCondition(regex);
@@ -119,6 +154,9 @@ public abstract class MappingCondition<I, I1> {
   /**
    * Creates a condition that matches strings with the specified {@link Pattern}. This condition
    * maps the input to the first matching group.
+   *
+   * @param pattern the regular expression pattern to match
+   * @return the created <code>MappingCondition</code>
    */
   public static MappingCondition<String, String> regex1Group(Pattern pattern) {
     return new Regex1MappingCondition(pattern);
@@ -127,6 +165,9 @@ public abstract class MappingCondition<I, I1> {
   /**
    * Creates a condition that matches strings with the specified regex. This condition maps the
    * input to  a {@link Pair} of the first two matching groups.
+   *
+   * @param regex the regular expression to match
+   * @return the created <code>MappingCondition</code>
    */
   public static MappingCondition<String, Pair<String, String>> regex2Groups(String regex) {
     return new Regex2MappingCondition(regex);
@@ -135,6 +176,9 @@ public abstract class MappingCondition<I, I1> {
   /**
    * Creates a condition that matches strings with the specified {@link Pattern}. This condition
    * maps the input to  a {@link Pair} of the first two matching groups.
+   *
+   * @param pattern the regular expression pattern to match
+   * @return the created <code>MappingCondition</code>
    */
   public static MappingCondition<String, Pair<String, String>> regex2Groups(Pattern pattern) {
     return new Regex2MappingCondition(pattern);
@@ -147,6 +191,9 @@ public abstract class MappingCondition<I, I1> {
    *
    * @param condition1 the condition to apply to the first value of the pair
    * @param condition2 the condition to apply to the second value of the pair
+   * @param <A> the type of the first value of the pair
+   * @param <B> the type of the second value of the pair
+   * @return the created <code>MappingCondition</code>
    */
   public static <A, B> MappingCondition<Pair<A, B>, Pair<A, B>> pair(
       MappingCondition<? super A, ? extends A> condition1,
@@ -161,6 +208,9 @@ public abstract class MappingCondition<I, I1> {
    *
    * @param condition1 the condition to apply to the first value of the pair
    * @param condition2 the condition to apply to the second value of the pair
+   * @param <A> the type of the first value of the pair
+   * @param <B> the type of the second value of the pair
+   * @return the created <code>MappingCondition</code>
    */
   public static <A, B> MappingCondition<Pair<A, B>, Pair<A, B>> pair(
       Predicate<? super A> condition1, Predicate<? super B> condition2) {

@@ -49,6 +49,8 @@ public final class Triplet<A, B, C> {
 
   /**
    * Returns the first value of the triplet.
+   *
+   * @return the first value.
    */
   public A getA() {
     return a;
@@ -56,6 +58,8 @@ public final class Triplet<A, B, C> {
 
   /**
    * Returns the second value of the triplet.
+   *
+   * @return the second value.
    */
   public B getB() {
     return b;
@@ -63,6 +67,8 @@ public final class Triplet<A, B, C> {
 
   /**
    * Returns the third value of the triplet.
+   *
+   * @return the thrird value.
    */
   public C getC() {
     return c;

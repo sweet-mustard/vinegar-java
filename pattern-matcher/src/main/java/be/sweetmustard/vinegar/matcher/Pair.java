@@ -50,6 +50,8 @@ public final class Pair<T1, T2> {
 
   /**
    * Returns the first value of the pair.
+   *
+   * @return the first value.
    */
   public T1 getA() {
     return a;
@@ -57,6 +59,8 @@ public final class Pair<T1, T2> {
 
   /**
    * Returns the second value of the pair.
+   *
+   * @return the second value.
    */
   public T2 getB() {
     return b;
