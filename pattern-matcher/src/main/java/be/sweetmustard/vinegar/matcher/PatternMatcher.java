@@ -42,6 +42,10 @@ import org.hamcrest.Matcher;
 /**
  * The Pattern Matcher Vinegar is inspired by JDK enhancement proposal 305. It brings Pattern
  * Matching to Java in the form of a DSL. See README.md for more information how to use.
+ *
+ * @param <I> the type this pattern matcher can match.
+ * @param <O> the output type of the values this pattern matcher produces. Use {@link Void} if you
+ * don't wish to produce any values.
  */
 public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
 
@@ -58,29 +62,33 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
   }
 
   /**
-   * Creates a mapper <code>Function</code> that extracts a single value from the input and applies
-   * the specified
-   * <code>mapper</code> on it.
+   * Creates a mapper {@link Function} that extracts a single value from the input and applies the
+   * specified <code>mapper</code> on it.
    *
    * @param extractedValueMapper the mapper <code>Function</code> to apply to the extracted value
-   * @return A mapper <code>Function</code> to use in a <code>then()</code> or
-   * <code>otherwise()</code> clause.
+   * @param <I> the input type to extract a value from, must implement {@link Extractable}
+   * @param <E> the type of the extracted value
+   * @param <O> the output type of the mapper function
+   * @return A mapper {@link Function} to use in a {@link CaseBuilder#then(Function)} or {@link
+   * #otherwise(Function)} clause.
    * @see Extractable
    */
-  public static <I extends Extractable<D>, D, O> Function<I, O> extract(
-      final Function<? super D, ? extends O> extractedValueMapper) {
+  public static <I extends Extractable<E>, E, O> Function<I, O> extract(
+      final Function<? super E, ? extends O> extractedValueMapper) {
     return input -> extractedValueMapper.apply(input.extract());
   }
 
   /**
-   * Creates a mapper <code>Function</code> that extracts a <code>Pair</code> of values from the
-   * input and applies the specified
-   * <code>mapper</code> on it.
+   * Creates a mapper {@link Function} that extracts a {@link Pair} of values from the input and
+   * applies the specified <code>mapper</code> on it.
    *
-   * @param extractedValuesMapper the mapper <code>BiFunction</code> to apply to the extracted
-   * values
-   * @return A mapper <code>Function</code> to use in a <code>then()</code> or
-   * <code>otherwise()</code> clause.
+   * @param extractedValuesMapper the mapper {@link BiFunction} to apply to the extracted values
+   * @param <I> the input type to extract a value from, must implement {@link Extractable}
+   * @param <E1> the type of the first extracted value
+   * @param <E2> the type of the second extracted value
+   * @param <O> the output type of the mapper function
+   * @return A mapper {@link Function} to use in a {@link CaseBuilder#then(Function)} or {@link
+   * #otherwise(Function)} clause.
    * @see Extractable
    */
   public static <I extends Extractable<Pair<E1, E2>>, E1, E2, O> Function<I, O> extract(
@@ -92,12 +100,15 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
   }
 
   /**
-   * Creates a mapper <code>Function</code> that extracts a <code>Triplet</code> of values from the
-   * input and applies the specified
-   * <code>mapper</code> on it.
+   * Creates a mapper {@link Function} that extracts a {@link Triplet} of values from the input and
+   * applies the specified <code>mapper</code> on it.
    *
-   * @param extractedValuesMapper the mapper <code>TriFunction</code> to apply to the extracted
-   * values
+   * @param extractedValuesMapper the mapper {@link TriFunction} to apply to the extracted values
+   * @param <I> the input type to extract a value from, must implement {@link Extractable}
+   * @param <E1> the type of the first extracted value
+   * @param <E2> the type of the second extracted value
+   * @param <E3> the type of the third extracted value
+   * @param <O> the output type of the mapper function
    * @return A mapper <code>Function</code> to use in a {@link CaseBuilder#then(Function)} or {@link
    * #otherwise(Function)} clause.
    * @see Extractable
@@ -114,6 +125,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
    * Matches any value that satisfies the specified <code>condition</code> that extracts a pair of
    * values.
    *
+   * @param condition the condition to satisfy
    * @param <I1> The type of the first extracted value.
    * @param <I2> The type of the second extracted value.
    * @return A <code>CaseBuilder</code> for chaining the result of this case
@@ -129,6 +141,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
    * optionally check for a subtype of the input type or extract a value of the input. In that case,
    * the parameter <code>I1</code> will differ from the original input type <code>I</code>.
    *
+   * @param condition the condition to satisfy
    * @param <I1> The type of the input type or the extracted value type, in case the condition
    * performs type checking or value extraction.
    * @return A <code>CaseBuilder</code> for chaining the result of this case
@@ -141,6 +154,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
   /**
    * Matches any value that equals the specified <code>value</code>.
    *
+   * @param value the value to match
    * @return A <code>CaseBuilder</code> for chaining the result of this case
    */
   public CaseBuilder<I, I, O> when(I value) {
@@ -150,6 +164,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
   /**
    * Matches any value that satisfies the specified <code>predicate</code>.
    *
+   * @param predicate the predicate to match
    * @return A <code>CaseBuilder</code> for chaining the result of this case
    */
   public CaseBuilder<I, I, O> when(Predicate<? super I> predicate) {
@@ -159,6 +174,7 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
   /**
    * Matches any value that satisfies the specified Hamcrest <code>matcher</code>.
    *
+   * @param matcher the matcher to match
    * @return A <code>CaseBuilder</code> for chaining the result of this case
    */
   public CaseBuilder<I, I, O> match(Matcher<? super I> matcher) {
@@ -169,11 +185,11 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
    * Adds an input <code>mapper</code> that will be called if none of the previous cases match. No
    * further cases can be added to a <code>PatternMatcher</code> after calling this method. Also,
    * the <code>PatternMatcher</code> will return <code>O</code> instead of
-   * <code>Optional&lt;O></code> when applied to an input <code>I</code>.
+   * <code>Optional&lt;O&gt;</code> when applied to an input <code>I</code>.
    *
    * @param mapper a <code>Function</code> that transforms the input into the output
    * @return a <code>ClosedMatcher</code> that can be called using the {@link
-   * ClosedMatcher#apply(I)} method
+   * ClosedMatcher#apply(Object)} method
    */
   public ClosedMatcher<I, O> otherwise(Function<? super I, ? extends O> mapper) {
     return new ClosedMatcher<>(cases, mapper);
@@ -181,11 +197,11 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
 
   /**
    * Adds an input <code>consumer</code> that will be called if none of the previous cases match. No
-   * further cases can be added to a <code>PatternMatcher</code> after calling this method.
+   * further cases can be added to a {@link PatternMatcher} after calling this method.
    *
-   * @param consumer a <code>Consumer</code> that accepts the input
-   * @return a <code>ClosedMatcher</code> that can be called using the {@link
-   * ClosedMatcher#apply(I)} method
+   * @param consumer a {@link Consumer} that accepts the input
+   * @return a {@link ClosedMatcher} that can be called using the {@link
+   * ClosedMatcher#apply(Object)} method
    */
   public ClosedMatcher<I, O> otherwiseDo(Consumer<? super I> consumer) {
     return new ClosedMatcher<>(cases, input -> {
@@ -196,22 +212,23 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
 
   /**
    * Adds an output <code>value</code> that will be returned if none of the previous cases match.
-   * Also, the <code>PatternMatcher</code> will return <code>O</code> instead of
-   * <code>Optional&lt;O></code> when applied to an input <code>I</code>.
+   * Also, the {@link PatternMatcher} will return <code>O</code> instead of {@link
+   * Optional}<code>&lt;O&gt;</code> when applied to an input <code>I</code>.
    *
-   * @return a <code>ClosedMatcher</code> that can be called using the {@link
-   * ClosedMatcher#apply(I)} method
+   * @param value the value to return
+   * @return a {@link ClosedMatcher} that can be called using the {@link
+   * ClosedMatcher#apply(Object)} method
    */
   public ClosedMatcher<I, O> otherwise(O value) {
     return new ClosedMatcher<>(cases, ignored -> value);
   }
 
   /**
-   * Applies the <code>PatternMatcher</code> to the specified <code>input</code>. The
-   * <code>then()</code> method of the first case that matches will be invoked.
+   * Applies the {@link PatternMatcher} to the specified <code>input</code>. The {@link
+   * CaseBuilder#then(Function)} method of the first case that matches will be invoked.
    *
-   * @return An <code>Optional</code> containing the result returned by the case that matched, or
-   * <code>Optional.empty()</code> if none of the cases match.
+   * @return An {@link Optional} containing the result returned by the case that matched, or {@link
+   * Optional#empty()} if none of the cases match.
    */
   @Override
   public Optional<O> apply(I input) {
@@ -223,9 +240,9 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
   }
 
   /**
-   * A intermediate builder for building a new case for a <code>PatternMatcher</code>. Calling
-   * {@link #then(Function)}, {@link #then(O)} or {@link #thenDo(Consumer)} will build the case and
-   * add it to the <code>PatternMatcher</code>.
+   * A intermediate builder for building a new case for a {@link PatternMatcher}. Calling {@link
+   * #then(Function)}, {@link #then(Object)} or {@link #thenDo(Consumer)} will build the case and
+   * add it to the {@link PatternMatcher}.
    */
   public static final class CaseBuilder<I, I1, O> {
 
@@ -243,8 +260,8 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      * Adds a <code>mapper</code> to this case that will be called when the input matches the
      * condition of this case.
      *
-     * @param mapper a <code>Function</code> that transforms the input into the output
-     * @return a new <code>PatternMatcher</code> with this case added.
+     * @param mapper a {@link Function} that transforms the input into the output
+     * @return a new {@link PatternMatcher} with this case added.
      */
     public PatternMatcher<I, O> then(Function<? super I1, ? extends O> mapper) {
       return new PatternMatcher<>(patternMatcher, new PatternMatcher.Case<>(condition, mapper));
@@ -254,7 +271,8 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      * Adds a <code>value</code> to this case that will be returned when the input matches the
      * condition of this case.
      *
-     * @return a new <code>PatternMatcher</code> with this case added.
+     * @param value the value to return from this case
+     * @return a new {@link PatternMatcher} with this case added.
      */
     public PatternMatcher<I, O> then(O value) {
       return new PatternMatcher<>(patternMatcher,
@@ -265,7 +283,8 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      * Adds a <code>consumer</code> to this case that will be called when the input matches the
      * condition of this case.
      *
-     * @return a new <code>PatternMatcher</code> with this case added.
+     * @param consumer the consumer to call from this case
+     * @return a new {@link PatternMatcher} with this case added.
      */
     public PatternMatcher<I, O> thenDo(Consumer<? super I1> consumer) {
       return new PatternMatcher<>(patternMatcher, new PatternMatcher.Case<>(condition, input -> {
@@ -291,8 +310,8 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      * Adds a <code>mapper</code> to this case that will be called when the input matches the
      * condition of this case.
      *
-     * @param mapper a <code>Function</code> that transforms the input into the output
-     * @return a new <code>PatternMatcher</code> with this case added.
+     * @param mapper a {@link Function} that transforms the input into the output
+     * @return a new {@link PatternMatcher} with this case added.
      */
     public PatternMatcher<I, O> then(BiFunction<? super I1, ? super I2, ? extends O> mapper) {
       return new PatternMatcher<>(patternMatcher,
@@ -303,7 +322,8 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
      * Adds a <code>consumer</code> to this case that will be called when the input matches the
      * condition of this case.
      *
-     * @return a new <code>PatternMatcher</code> with this case added.
+     * @param consumer the {@link BiConsumer} to call from this case
+     * @return a new {@link PatternMatcher} with this case added.
      */
     public PatternMatcher<I, O> thenDo(BiConsumer<? super I1, ? super I2> consumer) {
       return new PatternMatcher<>(patternMatcher, new PatternMatcher.Case<>(condition, i -> {
@@ -343,9 +363,10 @@ public final class PatternMatcher<I, O> implements Function<I, Optional<O>> {
     }
 
     /**
-     * Applies the <code>ClosedMatcher</code> to the specified <code>input</code>. The
-     * <code>then()</code> method of the first case that matches will be invoked.
+     * Applies the {@link ClosedMatcher} to the specified <code>input</code>. The {@link
+     * CaseBuilder#then(Function)} method of the first case that matches will be invoked.
      *
+     * @param input the input to apply this matcher on
      * @return The result returned by the first case that matched
      */
     @Override

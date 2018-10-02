@@ -12,11 +12,15 @@ public interface MaybeMatch<T> {
 
   /**
    * Returns whether or not this value matches the condition.
+   *
+   * @return true when the value matches, false when not.
    */
   boolean matches();
 
   /**
    * Returns the matching value, if the condition matches, otherwise null.
+   *
+   * @return the matching value, if the condition matches, otherwise null.
    */
   T getValue();
 
@@ -33,7 +37,9 @@ public interface MaybeMatch<T> {
    * Creates a new <code>MaybeMatch</code>
    *
    * @param match whether or not it is a match.
+   * @param <T> the type of the value in this <code>MaybeMatch</code>
    * @param value A supplier that supplies the value, in case it is a match
+   * @return the newly created <code>MaybeMatch</code>
    */
   static <T> MaybeMatch<T> create(boolean match, Supplier<T> value) {
     return match ? match(value.get()) : noMatch();
@@ -41,6 +47,10 @@ public interface MaybeMatch<T> {
 
   /**
    * Creates a new <code>Match</code> with the specified value.
+   *
+   * @param value the value of this <code>Match</code>
+   * @param <T> the type of the value in this <code>Match</code>
+   * @return the newly created <code>Match</code>
    */
   static <T> MaybeMatch<T> match(T value) {
     return new Match<>(value);
@@ -48,6 +58,9 @@ public interface MaybeMatch<T> {
 
   /**
    * Returns a <code>NoMatch</code>.
+   *
+   * @param <T> the expected type if this would have been a <code>Match</code>
+   * @return a <code>NoMatch</code>.
    */
   @SuppressWarnings("unchecked")
   static <T> MaybeMatch<T> noMatch() {

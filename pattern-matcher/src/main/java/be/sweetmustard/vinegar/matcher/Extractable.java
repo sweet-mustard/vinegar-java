@@ -31,12 +31,12 @@ package be.sweetmustard.vinegar.matcher;
  * <p>Assign this interface to a class to make value extraction easier during pattern matching.</p>
  * Example:
  * <pre>
- * class Rectangle implements Extractable&lt;Pair&lt;Double, Double>> {
+ * class Rectangle implements Extractable&lt;Pair&lt;Double, Double&gt;&gt; {
  *     double width;
  *     double height;
  *
- *     public Pair&lt;Double, Double> extract() {
- *         return new Pair<>(width, height);
+ *     public Pair&lt;Double, Double&gt; extract() {
+ *         return new Pair&lt;&gt;(width, height);
  *     }
  * }
  * </pre>
@@ -48,6 +48,8 @@ public interface Extractable<T> {
 
   /**
    * Returns the extracted value.
+   *
+   * @return the extracted value.
    */
   T extract();
 }
