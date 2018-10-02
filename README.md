@@ -1,6 +1,6 @@
 # Vinegar (Java)
 
-![Build status](https://travis-ci.org/sweet-mustard/vinegar-java.svg?branch=master)
+[![Build status](https://travis-ci.org/sweet-mustard/vinegar-java.svg?branch=master)](https://travis-ci.org/sweet-mustard/vinegar-java)
 
 Vinegar is a set of small but highly reusable libraries.
 Vinegar libraries typically don't require any other libraries, but play nice with popular frameworks and libraries.
