@@ -3,7 +3,7 @@
   <parent>
     <artifactId>vinegar-parent</artifactId>
     <groupId>be.sweetmustard.vinegar</groupId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.1</version>
   </parent>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
