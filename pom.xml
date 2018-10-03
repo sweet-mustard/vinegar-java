@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>be.sweetmustard.vinegar</groupId>
   <artifactId>vinegar-parent</artifactId>
   <packaging>pom</packaging>
   <version>0.1.1-SNAPSHOT</version>
+
+  <name>Vinegar</name>
+  <description>A set of small and highly reusable libraries for Java.</description>
+  <url>https://github.com/sweet-mustard/vinegar-java</url>
+
+  <licenses>
+    <license>
+      <name>MIT</name>
+      <url>https://opensource.org/licenses/MIT</url>
+    </license>
+  </licenses>
+
+  <organization>
+    <name>Sweet Mustard</name>
+    <url>https://sweetmustard.be/</url>
+  </organization>
+
+  <developers>
+    <developer>
+      <name>Stijn Van Bael</name>
+      <email>stijn.vanbael@sweetmustard.be</email>
+    </developer>
+  </developers>
+
   <modules>
     <module>pattern-matcher</module>
     <module>all</module>
