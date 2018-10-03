@@ -7,17 +7,7 @@ Vinegar libraries typically don't require any other libraries, but play nice wit
 
 ## Getting Started
 
-Add a Maven dependency on vinegar-java in your pom.xml:
-
-```xml
-<dependency>
-  <groupId>be.sweetmustard.vinegar</groupId>
-  <artifactId>vinegar-all</artifactId>
-  <version>0.1.1</version>
-</dependency>
-```
-
-Or if you only need one library, add a dependency on that specific library:
+Add a Maven dependency on the vinegar library you need in pom.xml:
 
 ```xml
 <dependency>
