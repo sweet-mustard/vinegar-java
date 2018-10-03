@@ -13,7 +13,7 @@ Add a Maven dependency on vinegar-java in your pom.xml:
 <dependency>
   <groupId>be.sweetmustard.vinegar</groupId>
   <artifactId>vinegar-all</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
 </dependency>
 ```
 
@@ -23,7 +23,7 @@ Or if you only need one library, add a dependency on that specific library:
 <dependency>
   <groupId>be.sweetmustard.vinegar</groupId>
   <artifactId>vinegar-pattern-matcher</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
 </dependency>
 ```
 
